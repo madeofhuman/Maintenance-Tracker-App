@@ -1,0 +1,35 @@
+@import url("base.css");
+
+.wrapper{
+	width: 90%;
+	margin: auto;
+}
+
+.table{
+	border: 2px solid rgba(220, 220, 220, 0.5);
+	padding: 10px;
+	margin: auto;
+	/*table-layout: fixed;*/
+	width: 800px;
+	min-width: 100%;
+	/*max-width: 100%;*/
+	text-align: center;
+	border-collapse: collapse;
+	border-spacing: 0;
+	height: 400px;
+	overflow: scroll;
+}
+
+.table-wrapper{
+	min-width: 90%;
+	overflow-x: auto;
+}
+
+.table td{
+	border: 1px solid rgba(220, 220, 220, 0.5);
+	margin: 0px;
+}
+
+.table tr:nth-child(even){
+	background-color: rgba(220, 220, 220, 0.1);
+}
