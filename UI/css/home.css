@@ -1,0 +1,153 @@
+@import url("base.css");
+
+.body .article{
+	padding: 40px 0 0 50px;
+}
+
+.body .article .icon{
+	padding-right: 40px;	
+}
+
+.body .article .icon img{
+	height: 100px;
+	padding-top: 40px;
+}
+
+.body .article .text{
+	width: 400px;
+	position: relative;
+}
+
+.body #login-links{
+	top: 50%;
+  position: absolute;
+  right: 0px;
+}
+
+.body form{
+	padding: 10px;
+	/*height: 300px;*/
+	position: absolute;
+	right: 50px;
+	padding-top: 50px;
+	z-index: 20;
+}
+
+.body .close-btn{
+	width: 15px;
+	height: 15px;
+	border: 1px dashed rgba(220, 220, 220, 0.5);
+	border-radius: 50%;
+	text-align: center;
+	font-size: 12px;
+	cursor: pointer;
+	position: relative;
+	top: -10px;
+}
+
+.body form input{
+	height: 30px;
+	width: 300px;
+	background-color: rgba(0,0,0,0);
+	border: none;
+	text-decoration: none;
+	border-bottom: 2px solid rgba(220, 220, 220, 0.5);
+	caret-color: rgba(220, 220, 220, 0.5);
+	color: #F2994A;
+	font-size: 1.2em;
+	line-height: 20px;
+}
+
+.body form input:focus{
+	outline: none;
+}
+
+.body form label{
+	display: block;
+	color: rgba(220, 220, 220, 0.5);
+}
+
+.body form input[type="submit"]{
+	border: none;
+	cursor: pointer;
+	width: auto;
+	padding: 0px;
+}
+
+h2{
+	font-size: 2em;
+}
+
+p{
+	font-size: 1.2em;
+}
+
+
+
+/* Responsive Layout Styles */
+
+@media (max-width: 1000px) {
+	h2{
+		font-size: 1.5em;
+	}
+	p{
+		font-size: 1em;
+	}
+	.body .article{
+		padding: 30px 0 0 25px;
+	}
+}
+
+@media (max-width: 923px) {
+	h2{
+		font-size: 1.5em;
+	}
+	p{
+		font-size: 1em;
+	}
+	.body .article{
+		padding: 30px 0 0 25px;
+	}
+	.body .article .text{
+		width: 300px;
+		position: relative;
+	}
+}
+
+@media (max-width: 845px) {
+	h2{
+		font-size: 1.5em;
+	}
+	p{
+		font-size: 1em;
+	}
+	.body .article{
+		padding: 30px;
+	}
+	.body .article .text{
+		width: 100%;
+		position: relative;
+	}
+	.body #login-links{
+  	position: relative;
+  	width: 100%;
+  	text-align: center;
+  	padding-top: 20px;
+	}
+	.body #login-links .left,
+	.body #login-links .right{
+		float: none;
+	}
+	.body form{
+		padding: 10px;
+		position: relative;
+		z-index: 20;
+	}
+
+}
+
+@media (max-width: 700px) {
+	.body .article{
+		padding: 10px 50px;
+	}	
+}

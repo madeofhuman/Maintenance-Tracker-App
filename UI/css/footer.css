@@ -1,0 +1,18 @@
+/* Footer Styles */
+
+.footer{
+	margin-top: 5px;
+	width: 100%;
+	position: absolute;
+	bottom: 0px;
+	padding-left: 20px;
+}
+
+
+/* Responsive Layout Styles */
+
+@media (max-width: 449px) {
+	.footer{
+		bottom: -40px;
+	}
+}
