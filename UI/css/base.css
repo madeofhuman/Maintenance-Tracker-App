@@ -16,8 +16,7 @@ html{
 
  body{
 	background-color: #293032;
-	padding: 0p: 0pxx;
-	margin;
+	padding: 0px;
 	height: 100%;
 	font-family: 'Rubik', sans-serif;
 	overflow-y: scroll;
@@ -29,7 +28,7 @@ html{
 
 .body{
 	position: absolute;
-	top: 25%;
+	top: 15%;
 	width: 100%
 }
 
