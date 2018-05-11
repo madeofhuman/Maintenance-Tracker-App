@@ -18,17 +18,19 @@
 	<div class="wrapper">
 			<div class="header">
 				<span class="logo left">
-					<a href="#"><img src="UI/img/logo.svg" alt="logo"></a>
+					<a href="#"><img src="./UI/img/logo.svg" alt="logo"></a>
 				</span>
-				<span class="profile-icon right">
-					<img src="UI/img/profile-icon.svg" alt="profile icon">
-				</span>
+
+				<div class="profile-icon right hidden">
+					<img src="./UI/img/profile-icon.svg" alt="profile icon">
+				</div>
 			</div>
 
 			<div class="body">
 				<div class="article left">
 					<span class="icon">
-						<img src="UI/img/wrench-hammer.svg" alt="icon">
+						<img src="./UI/img/wrench-hammer.svg" alt="icon">
+
 					</span>
 
 					<span class="text right white">
@@ -43,7 +45,7 @@
 				</div>
 
 				<div id="sign-in-form" class="form hidden right">
-					<form action="" method="post">
+					<form action="./UI/user/dashboard.html" method="post">
 						<span id="sign-in-form-close-btn" class="close-btn grey right">x</span>
 						<label><span>Email:</span></label>
 						<input type="text" name="email">
@@ -56,7 +58,7 @@
 				</div>
 
 				<div id="sign-up-form" class="form hidden right">
-					<form action="" method="post">
+					<form action="./UI/user/dashboard.html" method="post">
 						<span id="sign-up-form-close-btn" class="close-btn grey right">x</span>
 						<label><span>Email:</span></label>
 						<input type="text" name="email">
@@ -67,7 +69,7 @@
 						<label><span>Comfirm password:</span></label>
 						<input type="password" name="password-confirm">
 						<br><br>
-						<input type="submit" name="submit-btn" value="Sign up" class="orange">
+						<a href="./UI/user/dashboard.html"><input type="submit" name="submit-btn" value="Sign up" class="orange"></a>
 					</form>
 				</div>
 
@@ -78,8 +80,14 @@
 					<span class="pipe white">
 						|
 					</span>
-					<span class="right link-btn">
+					<span class=" link-btn">
 						<span title="Sign up" class="orange" id="sign-up-btn">Sign up</span>
+					</span>
+					<span class="pipe white">
+						|
+					</span>
+					<span class="right link-btn">
+						<span title="Admin" class="orange" id="sign-up-btn"><a href="./UI/admin/dashboard.html">Admin</a></span>
 					</span>
 				</div>
 			</div>
@@ -91,8 +99,8 @@
 			</div>
 	</div>
 	<span class="bg-image right">
-		<img src="UI/img/gears.svg" alt="background image">
+		<img src="./UI/img/gears.svg" alt="background image">
 	</span>
-	<script src="UI/js/app.js" type="text/javascript"></script>
+	<script src="./UI/js/app.js" type="text/javascript"></script>
 </body>
 </html>
