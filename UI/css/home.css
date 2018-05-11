@@ -66,7 +66,8 @@
 	color: rgba(220, 220, 220, 0.5);
 }
 
-.body form input[type="submit"]{
+.body form input[type="submit"],
+.body form input[type="button"]{
 	border: none;
 	cursor: pointer;
 	width: auto;
