@@ -59,14 +59,14 @@ function redirectTo(url){
 if(signinBtn){
 	signinBtn.addEventListener('click', ()=>{
 		hide(signinForm);
-		redirectTo('ui/user/dashboard.html');
+		redirectTo('UI/user/dashboard.html');
 	});
 }
 
 if(signupBtn){
 	signupBtn.addEventListener('click', ()=>{
 		hide(signinForm);
-		redirectTo('ui/user/dashboard.html');
+		redirectTo('UI/user/dashboard.html');
 	});
 }
 
