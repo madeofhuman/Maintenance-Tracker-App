@@ -72,6 +72,14 @@ a{
 	color: rgb(220, 220, 220);
 }
 
+.green-bg{
+	background-color: darkgreen;
+}
+
+.red-bg{
+	background-color: darkred;
+}
+
 /* Fix for Chrome's autofill background-color bug (source: https://bit.ly/2It6O7K)*/
 
 .body form input:-webkit-autofill,

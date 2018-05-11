@@ -1,0 +1,23 @@
+@import url("base.css");
+
+.card{
+  width: 500px;
+  height: 350px;
+  margin: 20px auto;
+  border: 2px solid rgba(220, 220, 220, 0.5);
+  padding: 10px;
+  padding-top: 30px;
+}
+
+.row{
+  height: 30px;
+  margin-top: 10px;
+}
+
+.title{
+  display: inline;
+}
+
+.center{
+  text-align: center;
+}
