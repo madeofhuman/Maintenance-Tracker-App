@@ -7,7 +7,7 @@
     "start": "nodemon ./server/index.js --exec babel-node",
     "build": "babel server -d dist",
     "serve": "node dist/index.js",
-    "test": "mocha --compilers js:babel-register ./server/test --exit"
+    "test": "mocha --require babel-register ./server/test"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
+    "coffeescript": "^2.3.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
