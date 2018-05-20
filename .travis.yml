@@ -5,4 +5,4 @@ node_js:
 
 before_script: chmod 777 ./node_modules/.bin/mocha
 
-after_success: 'npm run coveralls'
+after_success: npm run coverage
