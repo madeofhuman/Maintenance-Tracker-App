@@ -1,3 +1,8 @@
 language: node_js
 
+node_js:
+ - "stable"
+
+before_script: chmod 777 ./node_modules/.bin/mocha
+
 after_success: 'npm run coveralls'
