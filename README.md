@@ -1,11 +1,5 @@
 
-[![forthebadge](https://forthebadge.com/images/badges/validated-html5.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/uses-css.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
-
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/makes-people-smile.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/uses-badges.svg)](https://forthebadge.com)
+[![Build Status](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App.svg?branch=staging-api-v1)](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App)
 
 # Maintenance-Tracker-App
 Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
