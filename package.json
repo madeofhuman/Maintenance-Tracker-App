@@ -1,0 +1,27 @@
+{
+  "name": "maintenance-tracker-app",
+  "version": "1.0.0",
+  "description": "An application to create and track maintenance and repair requests",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madeofhuman/Maintenance-Tracker-App.git"
+  },
+  "keywords": [
+    "maintenance",
+    "repair"
+  ],
+  "author": "CJ Odina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/madeofhuman/Maintenance-Tracker-App/issues"
+  },
+  "homepage": "https://github.com/madeofhuman/Maintenance-Tracker-App#readme",
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
