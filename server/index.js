@@ -1,10 +1,10 @@
 import http from 'http';
 
-if (!module.parent) {
+// if (!module.parent) {
   http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Hello World\nI am CJ Odina');
   }).listen(1337, '127.0.0.1');
-}
+// }
 
 console.log('Server running at http://127.0.0.1:1337/');
