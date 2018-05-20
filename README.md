@@ -1,6 +1,6 @@
 
 [![Build Status](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App.svg?branch=staging-api-v1)](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App)
-[![Coverage Status](https://coveralls.io/repos/github/madeofhuman/Maintenance-Tracker-App/badge.svg?branch=master)](https://coveralls.io/github/madeofhuman/Maintenance-Tracker-App?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/madeofhuman/Maintenance-Tracker-App/badge.svg?branch=master)](https://coveralls.io/github/madeofhuman/Maintenance-Tracker-App?branch=staging-api-v1)
 
 # Maintenance-Tracker-App
 Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
