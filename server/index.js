@@ -1,6 +1,6 @@
 import http from 'http';
 
-const port = process.env.PATH || 1337;
+const port = (process.env.PORT || 1337);
 
 if (!module.parent) {
   http.createServer((req, res) => {
