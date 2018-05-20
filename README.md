@@ -1,7 +1,7 @@
 
 [![Build Status](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App.svg?branch=staging-api-v1)](https://travis-ci.org/madeofhuman/Maintenance-Tracker-App)
 [![Coverage Status](https://coveralls.io/repos/github/madeofhuman/Maintenance-Tracker-App/badge.svg?branch=staging-api-v1)](https://coveralls.io/github/madeofhuman/Maintenance-Tracker-App?branch=staging-api-v1)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b8c7389b9900a8f5df19/maintainability)](https://codeclimate.com/github/madeofhuman/Maintenance-Tracker-App/maintainability)
 
 # Maintenance-Tracker-App
 Maintenance Tracker App is an application that provides users with the ability to reach out to operations or repairs department regarding repair or maintenance requests and monitor the status of their request.
