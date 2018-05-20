@@ -1,4 +1,7 @@
 .dev-notes.txt
+
 .coveralls.yml
-.vscode
-node_modules
+
+.vscode/
+
+node_modules/
