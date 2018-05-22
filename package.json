@@ -10,6 +10,12 @@
     "test": "nyc --reporter=html --reporter=text mocha --require babel-register ./server/test --recursive --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
+  "nyc": {
+    "exclude": [
+      "UI",
+      "server/test"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/madeofhuman/Maintenance-Tracker-App.git"
