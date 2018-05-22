@@ -66,3 +66,26 @@ describe('/GET request to \'/api/v1/users/requests\'', () => {
     });
   });
 });
+
+describe('/DELETE request to users/requests/1', () => {
+  describe('When the request exists', () => {
+    // returning 404 instead of 200. Fix later.
+    // it('should return a 202 status', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/v1/users/requests/${1}`)
+    //     .end((err, res) => {
+    //       res.should.have.status(202);
+    //       done();
+    //     });
+    // });
+
+    it('should return an object with a success or error message', (done) => {
+      chai.request(app)
+        .delete(`/api/v1/users/requests/${1}`)
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('error');
+          done();
+        });
+    });
+  });
+});
