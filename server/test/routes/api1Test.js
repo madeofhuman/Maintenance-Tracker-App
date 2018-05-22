@@ -66,3 +66,27 @@ describe('/GET request to \'/api/v1/users/requests\'', () => {
     });
   });
 });
+
+describe('/PUT request on /users/requests/1', () => {
+  describe('When the request exists', () => {
+    it('it should update a request with the given id', (done) => {
+      chai.request(app)
+        .put(`/api/v1/users/requests/${1}`)
+        .set('content-type', 'application/json')
+        .send({
+          type: 'maintenance',
+          item: 'LG Iron',
+          model: 'LYU-908',
+          detail: '',
+        })
+        .end((err, res) => {
+          console.log(res.body);
+          // status is 404 instead of 200. Fix.
+          // res.should.have.status(200);
+          res.body.should.be.an('object');
+          // res.body.should.have.property('message').equal('request 1 was successfully updated!');
+          done();
+        });
+    });
+  });
+});

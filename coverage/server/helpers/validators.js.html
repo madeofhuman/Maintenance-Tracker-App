@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">13.33% </span>
+        <span class="strong">15.38% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>2/15</span>
+        <span class='fraction'>2/13</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">0% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/20</span>
+        <span class='fraction'>0/21</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">0% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>0/2</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">13.33% </span>
+        <span class="strong">15.38% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>2/15</span>
+        <span class='fraction'>2/13</span>
       </div>
     </div>
     <p class="quiet">
@@ -75,24 +75,10 @@
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -118,40 +104,33 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const validateRequest = function <span class="fstat-no" title="function not covered" >validateRequestBody(request, res, err) {</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const validateRequest = function <span class="fstat-no" title="function not covered" >validateRequestBody(request) {</span>
   const {
-    type,
-    item,
-    model,
-    detail,
+    type, item, model, detail,
   } = <span class="cstat-no" title="statement not covered" >request;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (type !== 'repair' &amp;&amp; type !== 'maintenance') {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ error: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'' });</span>
+<span class="cstat-no" title="statement not covered" >  if (type === undefined || (type.toLowerCase() !== 'repair' &amp;&amp; type.toLowerCase() !== 'maintenance')) {</span>
+<span class="cstat-no" title="statement not covered" >    return 'typeError';</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if ((item == null &amp;&amp; item === undefined)) {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ error: 'You supplied an invalid item. An item must be a string of more than three characters.' });</span>
+<span class="cstat-no" title="statement not covered" >  if ((item === undefined || item.length &lt; 3)) {</span>
+<span class="cstat-no" title="statement not covered" >    return 'itemError';</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (item.length &lt; 3) {</span>
-<span class="cstat-no" title="statement not covered" >    return err;</span>
-  }
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  if (type === 'repair') {</span>
+<span class="cstat-no" title="statement not covered" >  if (type === undefined || type.toLowerCase() === 'repair') {</span>
 <span class="cstat-no" title="statement not covered" >    if (detail == null || detail.length &lt; 10) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ error: 'Please enter a description of the error that is more than ten characters' });</span>
+<span class="cstat-no" title="statement not covered" >      return 'detailError';</span>
     }
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (model &amp;&amp; model.length &lt; 3) {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ error: 'Please enter a valid model. A valid model is more than 2 characters' });</span>
+<span class="cstat-no" title="statement not covered" >  if (model === undefined || model.length &lt; 3) {</span>
+<span class="cstat-no" title="statement not covered" >    return 'modelError';</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return true;</span>
 };
 &nbsp;
-export const validateUser = function <span class="fstat-no" title="function not covered" >validateUserDetails(user, res, err) {</span>
+export const validateUser = function <span class="fstat-no" title="function not covered" >validateUserBody() {</span>
   //
 };
 &nbsp;</pre></td></tr>
@@ -160,7 +139,7 @@ export const validateUser = function <span class="fstat-no" title="function not 
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun May 20 2018 21:18:30 GMT+0100 (GMT Summer Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue May 22 2018 20:38:51 GMT+0100 (GMT Summer Time)
 </div>
 </div>
 <script src="..\..\prettify.js"></script>

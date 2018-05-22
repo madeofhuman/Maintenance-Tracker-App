@@ -11,5 +11,5 @@ api1.all('/', (req, res) => {
 });
 
 api1.get('/users/requests', RequestController.getRequests);
-
+api1.put('/users/requests/:requestId', RequestController.updateRequest);
 export default api1;
