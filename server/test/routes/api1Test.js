@@ -124,3 +124,51 @@ describe('/POST request to \'/api/v1/users/requests\'', () => {
     });
   });
 });
+
+describe('/GET request to \'/api/v1/users/requests/1\'', () => {
+  describe('When the database is not empty', () => {
+    it('should return 200 status', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/requests/1')
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should return an object', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/requests/1')
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('id').equal(requests.find(request => request.id === 1).id);
+          done();
+        });
+    });
+  });
+
+  describe('When the database is empty', () => {
+    before(() => {
+      while (requests.length > 0) {
+        requests.pop();
+      }
+    });
+
+    it('should return a 204 error', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/requests/1')
+        .end((err, res) => {
+          res.should.have.status(404);
+          done();
+        });
+    });
+
+    it('should return an error message', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/requests/1')
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('error');
+          done();
+        });
+    });
+  });
+});

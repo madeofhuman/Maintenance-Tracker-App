@@ -52,4 +52,20 @@ export default class RequestController {
       location: `/api/v1/users/requests/${id}`,
     });
   }
+
+  static getRequest(req, res) {
+    const requestId = parseInt(req.params.requestId, 10);
+
+    if (typeof requestId !== 'number') {
+      return res.status(400).json({ error: 'You have entered an invalid request id' });
+    }
+
+    const result = requests.find(request => request.id === requestId);
+
+    if (result === undefined) {
+      return res.status(404).json({ error: 'There is no request with that id' });
+    }
+
+    return res.status(200).json(result);
+  }
 }
