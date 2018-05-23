@@ -13,5 +13,6 @@ api1.all('/', (req, res) => {
 api1.get('/users/requests', RequestController.getRequests);
 api1.post('/users/requests', RequestController.createRequest);
 api1.get('/users/requests/:requestId', RequestController.getRequest);
+api1.delete('/users/requests/:requestId', RequestController.deleteRequest);
 
 export default api1;

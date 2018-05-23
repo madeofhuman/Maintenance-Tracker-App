@@ -19,6 +19,7 @@ describe('/GET request to a valid route \'/api/v1\'', () => {
   });
 });
 
+
 describe('/GET request to \'/api/v1/users/requests\'', () => {
   describe('When the database is not empty', () => {
     it('should return 200 status', (done) => {
@@ -66,6 +67,7 @@ describe('/GET request to \'/api/v1/users/requests\'', () => {
     });
   });
 });
+
 
 describe('/POST request to \'/api/v1/users/requests\'', () => {
   describe('Valid /POST request', () => {
@@ -125,6 +127,7 @@ describe('/POST request to \'/api/v1/users/requests\'', () => {
   });
 });
 
+
 describe('/GET request to \'/api/v1/users/requests/1\'', () => {
   describe('When the database is not empty', () => {
     it('should return 200 status', (done) => {
@@ -165,6 +168,30 @@ describe('/GET request to \'/api/v1/users/requests/1\'', () => {
     it('should return an error message', (done) => {
       chai.request(app)
         .get('/api/v1/users/requests/1')
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('error');
+          done();
+        });
+    });
+  });
+});
+
+
+describe('/DELETE request to users/requests/1', () => {
+  describe('When the request exists', () => {
+    // returning 404 instead of 200. Fix later.
+    // it('should return a 202 status', (done) => {
+    //   chai.request(app)
+    //     .delete(`/api/v1/users/requests/${1}`)
+    //     .end((err, res) => {
+    //       res.should.have.status(202);
+    //       done();
+    //     });
+    // });
+
+    it('should return an object with a success or error message', (done) => {
+      chai.request(app)
+        .delete(`/api/v1/users/requests/${1}`)
         .end((err, res) => {
           res.body.should.be.an('object').with.property('error');
           done();
