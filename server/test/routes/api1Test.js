@@ -213,7 +213,6 @@ describe('/PUT request on /users/requests/1', () => {
           detail: '',
         })
         .end((err, res) => {
-          console.log(res.body);
           // status is 404 instead of 200. Fix.
           // res.should.have.status(200);
           res.body.should.be.an('object');

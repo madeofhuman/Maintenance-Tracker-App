@@ -70,21 +70,20 @@ export default class RequestController {
   }
 
   static deleteRequest(req, res) {
-    const request = Requests.find(r => r.id === parseInt(req.params.requestId, 10));
-    console.log(request);
+    const request = requests.find(r => r.id === parseInt(req.params.requestId, 10));
 
     if (!request) {
       return res.status(404).json({ error: 'The request with the given id was not found' });
     }
 
-    const index = Requests.indexOf(request);
-    Requests.splice(index, 1);
+    const index = requests.indexOf(request);
+    requests.splice(index, 1);
 
     return res.status(202).json(request);
   }
 
   static updateRequest(req, res) {
-    const request = Requests.find(r => r.id === parseInt(req.params.requestId, 10));
+    const request = requests.find(r => r.id === parseInt(req.params.requestId, 10));
 
     if (request === undefined) {
       return res.status(404).json({ error: 'There is no request with that id in the dataase' });

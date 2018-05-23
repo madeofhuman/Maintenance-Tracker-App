@@ -13,7 +13,9 @@
   "nyc": {
     "exclude": [
       "UI",
-      "server/test"
+      "server/test",
+      "server/controllers",
+      "server/helpers"
     ]
   },
   "repository": {

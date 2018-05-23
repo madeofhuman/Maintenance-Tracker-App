@@ -1,3 +1,5 @@
+coverage/
+
 .dev-notes.txt
 
 .coveralls.yml
@@ -7,5 +9,3 @@
 node_modules/
 
 .nyc_output
-
-coverage/
