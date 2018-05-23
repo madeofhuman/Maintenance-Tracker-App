@@ -1,5 +1,5 @@
-export const Users = [];
-export const Requests = [
+export const users = [];
+export const requests = [
   {
     id: 1,
     type: 'repair',
