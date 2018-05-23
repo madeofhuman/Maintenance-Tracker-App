@@ -11,5 +11,7 @@ api1.all('/', (req, res) => {
 });
 
 api1.get('/users/requests', RequestController.getRequests);
+api1.post('/users/requests', RequestController.createRequest);
+api1.get('/users/requests/:requestId', RequestController.getRequest);
 
 export default api1;
