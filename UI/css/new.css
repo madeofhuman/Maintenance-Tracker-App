@@ -9,3 +9,13 @@
   margin: auto;
   width: 80%;
 }
+
+
+#new-request-btn {
+  margin-top: 15px;
+}
+
+form > * {
+  height: 35px;
+  font-size: 1em;
+}

@@ -1,23 +1,36 @@
 @import url("base.css");
 
 .card{
-  width: 500px;
-  height: 350px;
+  width: auto;
+  max-width: 600px;
+  height: auto;
   margin: 20px auto;
   border: 2px solid rgba(220, 220, 220, 0.5);
-  padding: 10px;
+  padding: 20px;
   padding-top: 30px;
+  font-size: 1em;
 }
 
 .row{
   height: 30px;
   margin-top: 10px;
+  display: block;
 }
 
 .title{
-  display: inline;
+  display: block;
+}
+
+#title {
+  font-size: 1.3em;
 }
 
 .center{
   text-align: center;
+}
+
+#request-btns {
+  display: grid;
+  height: auto;
+  margin-top: 60px;
 }
