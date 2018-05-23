@@ -3,7 +3,7 @@ export const validateRequest = function validateRequestBody(request) {
     type, item, model, detail,
   } = request;
 
-  if (type === undefined || (type.toLowerCase() !== 'repair' && type.toLowerCase !== 'maintenance')) {
+  if (type === undefined || (type.toLowerCase() !== 'repair' && type.toLowerCase() !== 'maintenance')) {
     return 'typeError';
   }
 
