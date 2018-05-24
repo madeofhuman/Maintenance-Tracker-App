@@ -121,3 +121,37 @@ a{
 		top: 10%;
 	}
 }
+
+@media (min-width: 403px) {
+	* {
+		font-size: 1em;
+	}
+
+	.footer {
+		bottom: -1000px;
+	}
+
+	#table-sort select{
+		font-size: 0.8em;
+	}
+
+	.body {
+		margin-top: 0px;
+	}
+
+	.logo img {
+		width: 250px;
+	}
+}
+
+@media (min-width: 845px) {
+	.footer {
+		bottom: -250px;
+	}
+}
+
+@media (max-width: 425px) {
+	.body {
+		margin-top: 60px;
+	}
+}
