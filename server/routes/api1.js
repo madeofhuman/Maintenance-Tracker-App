@@ -18,5 +18,6 @@ api1.get('/users/requests/:requestId', RequestController.getRequest);
 api1.delete('/users/requests/:requestId', RequestController.deleteRequest);
 api1.post('/auth/signup', UserController.createUser);
 api1.post('/auth/login', UserController.userLogin);
+api1.get('/requests', RequestController.getAllRequests);
 
 export default api1;

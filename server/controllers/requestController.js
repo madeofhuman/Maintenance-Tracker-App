@@ -168,4 +168,35 @@ export default class RequestController {
       res.status(200).json({ message: 'You have successfully updated the request' });
     });
   }
+
+  static getAllRequests(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
+    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    if (adminValidationResult !== true) {
+      return res.status(adminValidationResult.errorCode).json(adminValidationResult);
+    }
+
+    console.log(adminValidationResult);
+
+    db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
+      if (error) {
+        return next(error);
+      }
+
+      if (result.rows < 1) {
+        return res.status(404).json({ error: 'There are no requests in the system' });
+      }
+
+      return res.status(200).json(result.rows);
+    });
+  }
 }

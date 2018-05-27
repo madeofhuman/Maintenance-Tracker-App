@@ -300,3 +300,25 @@ describe('/PUT request on /users/requests/1', () => {
   //   });
   // });
 });
+
+describe('/GET request to /requests', () => {
+  describe('When the user is not authenticated', () => {
+    it('should return 401 status', (done) => {
+      chai.request(app)
+        .get('/api/v1/requests')
+        .end((err, res) => {
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should return an error message', (done) => {
+      chai.request(app)
+        .get('/api/v1/requests')
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('message').equal('Please log in to use the app');
+          done();
+        });
+    });
+  });
+});
