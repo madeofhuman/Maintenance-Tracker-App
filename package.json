@@ -15,7 +15,8 @@
       "UI",
       "server/test",
       "server/controllers",
-      "server/helpers"
+      "server/helpers",
+      "server/models"
     ]
   },
   "repository": {
