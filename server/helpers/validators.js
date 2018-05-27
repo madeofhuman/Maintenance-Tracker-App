@@ -91,8 +91,9 @@ export const tokenValidator = {
         errorMessage: 'You need admin access to perform this opertion',
         errorCode: 403,
       };
+    } else {
+      result = true;
     }
-    result = true;
     return result;
   },
 };
