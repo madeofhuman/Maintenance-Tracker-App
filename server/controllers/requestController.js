@@ -257,4 +257,33 @@ export default class RequestController {
       return res.status(200).json({ message: `Request ${req.params.requestId} successfully disapproved` });
     });
   }
+
+  static resolveRequest(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
+    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    if (adminValidationResult !== true) {
+      return res.status(adminValidationResult.errorCode).json(adminValidationResult);
+    }
+
+    db.query('UPDATE requests SET status = $1 where id = $2 RETURNING *', ['resolved', req.params.requestId], (error, result) => {
+      if (error) {
+        return next(error);
+      }
+
+      if (result.rows < 1) {
+        return res.status(404).json({ message: `There is no request with id ${req.params.requestId} in the system` });
+      }
+
+      return res.status(200).json({ message: `Request ${req.params.requestId} completed successfully` });
+    });
+  }
 }
