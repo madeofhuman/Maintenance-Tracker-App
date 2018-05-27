@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import RequestController from '../controllers/requestController';
+import UserController from '../controllers/userController';
 
 const api1 = express.Router();
 
@@ -15,5 +16,7 @@ api1.put('/users/requests/:requestId', RequestController.updateRequest);
 api1.post('/users/requests', RequestController.createRequest);
 api1.get('/users/requests/:requestId', RequestController.getRequest);
 api1.delete('/users/requests/:requestId', RequestController.deleteRequest);
+api1.post('/auth/signup', UserController.createUser);
+api1.post('/auth/login', UserController.userLogin);
 
 export default api1;
