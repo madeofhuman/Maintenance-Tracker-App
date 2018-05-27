@@ -20,5 +20,6 @@ api1.post('/auth/signup', UserController.createUser);
 api1.post('/auth/login', UserController.userLogin);
 api1.get('/requests', RequestController.getAllRequests);
 api1.put('/requests/:requestId/approve', RequestController.approveRequest);
+api1.put('/requests/:requestId/disapprove', RequestController.disapproveRequest);
 
 export default api1;
