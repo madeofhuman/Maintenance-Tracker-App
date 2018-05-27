@@ -344,3 +344,25 @@ describe('PUT request to /api/v1/requests/:requestId/approve', () => {
     });
   });
 });
+
+describe('PUT request to /api/v1/requests/:requestId/disapprove', () => {
+  describe('When the user is not authenticated', () => {
+    it('should return 401 status', (done) => {
+      chai.request(app)
+        .put('/api/v1/requests/2/approve')
+        .end((err, res) => {
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should return an error message', (done) => {
+      chai.request(app)
+        .put('/api/v1/requests/2/disapprove')
+        .end((err, res) => {
+          res.body.should.be.an('object').with.property('message').equal('Please log in to use the app');
+          done();
+        });
+    });
+  });
+});
