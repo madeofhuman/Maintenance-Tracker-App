@@ -155,18 +155,22 @@ export default class RequestController {
       res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
     }
 
-    db.query('UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6 and owner = $7', [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.requestId, tokenValidationResult.email], (error, result) => {
-      if (error) {
-        console.log(error);
-        return next(error);
-      }
+    db.query(
+      'UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6 and owner = $7 and status NOT LIKE $8',
+      [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.requestId, tokenValidationResult.email, 'pending'],
+      (error, result) => {
+        if (error) {
+          console.log(error);
+          return next(error);
+        }
 
-      if (result.rowCount < 1) {
-        return res.status(500).json({ message: `No request with id ${req.params.requestId} was found in the database` });
-      }
+        if (result.rowCount < 1) {
+          return res.status(500).json({ message: `No unapproved request with id ${req.params.requestId} was found in the database` });
+        }
 
-      res.status(200).json({ message: 'You have successfully updated the request' });
-    });
+        res.status(200).json({ message: 'You have successfully updated the request' });
+      },
+    );
   }
 
   static getAllRequests(req, res, next) {
@@ -216,7 +220,7 @@ export default class RequestController {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }
 
-    db.query('UPDATE requests SET status = $1 where id = $2 RETURNING *', [req.body.status, req.params.requestId], (error, result) => {
+    db.query('UPDATE requests SET status = $1 where id = $2 RETURNING *', ['pending', req.params.requestId], (error, result) => {
       if (error) {
         return next(error);
       }
