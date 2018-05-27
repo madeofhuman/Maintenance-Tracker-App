@@ -1,12 +1,25 @@
-import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import Request from '../models/request';
-import { validateRequest } from '../helpers/validators';
-import db from '../database';
+import { validateRequest, tokenValidator } from '../helpers/validators';
+import { db } from '../database';
 
+dotenv.config();
 
 export default class RequestController {
   static getRequests(req, res, next) {
-    db.query('SELECT * FROM requests', (error, result) => {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
+    db.query('SELECT * FROM requests WHERE owner = $1', [tokenValidationResult.email], (error, result) => {
       if (error) {
         return next(error);
       }
@@ -20,42 +33,29 @@ export default class RequestController {
   }
 
   static createRequest(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
     const {
       type, item, model, detail,
     } = req.body;
-
-    const validationResult = validateRequest(req.body);
-
-    if (validationResult === 'typeError') {
-      return res.status(400).json({
-        error: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'',
-      });
-    }
-
-    if (validationResult === 'itemError') {
-      return res.status(400).json({
-        error: 'You supplied an invalid item. An item must be a string of more than three characters.',
-      });
-    }
-
-    if (validationResult === 'detailError') {
-      return res.status(400).json({
-        error: 'Please enter a description of the error that is more than ten characters',
-      });
-    }
-
-    if (validationResult === 'modelError') {
-      return res.status(400).json({
-        error: 'Please enter a valid model. A valid model is more than 2 characters',
-      });
+    const bodyValidationResult = validateRequest(req.body);
+    if (bodyValidationResult !== true) {
+      res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
     }
 
     const status = 'pending';
+    const owner = tokenValidationResult.email;
+    const request = new Request(type, item, model, detail, status, owner);
 
-    const request = new Request(type, item, model, detail, status, '');
-    request.status = status;
-
-    db.query('INSERT INTO requests (type, item, model, detail, status, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [request.type, request.item, request.model, request.detail, request.status, 'NOW()'], (error, result) => {
+    db.query('INSERT INTO requests (type, item, model, detail, status, owner, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [request.type, request.item, request.model, request.detail, request.status, request.owner, 'NOW()'], (error, result) => {
       if (error) {
         res.json(error);
         return next(error);
@@ -70,19 +70,31 @@ export default class RequestController {
   }
 
   static getRequest(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
     const requestId = parseInt(req.params.requestId, 10);
 
     if (typeof requestId !== 'number') {
       return res.status(400).json({ error: 'You have entered an invalid request id' });
     }
 
-    db.query('SELECT * FROM requests WHERE id = $1', [requestId], (error, result) => {
+    db.query('SELECT * FROM requests WHERE owner = $1 AND id = $2', [tokenValidationResult.email, requestId], (error, result) => {
       if (error) {
         return next(error);
       }
 
       if (result.rows < 1) {
-        return res.status(404).json({ message: 'There is no result with that id' });
+        return res.status(404).json({ message: 'There is no request with that id' });
       }
 
       return res.status(200).json(result.rows);
@@ -90,15 +102,31 @@ export default class RequestController {
   }
 
   static deleteRequest(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
     const requestId = parseInt(req.params.requestId, 10);
 
     if (typeof requestId !== 'number') {
       return res.status(400).json({ message: 'You have entered an invalid request id. A valid request id is a positive integer.' });
     }
 
-    db.query('DELETE FROM requests WHERE id = $1', [requestId], (error) => {
+    db.query('DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *', [requestId, tokenValidationResult.email], (error, result) => {
       if (error) {
         return next(error);
+      }
+
+      if (result.rowCount < 1) {
+        return res.status(404).json({ message: `No request with id ${req.params.requestId} was found in the database` });
       }
 
       res.status(200).json({ message: 'The request was succesfully deleted' });
@@ -106,46 +134,35 @@ export default class RequestController {
   }
 
   static updateRequest(req, res, next) {
+    if (!req.headers.token || req.headers.token === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
+    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
+      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
+    }
+
     const requestId = parseInt(req.params.requestId, 10);
 
     if (typeof requestId !== 'number') {
       return res.status(400).json({ error: 'You have entered an invalid request id' });
     }
 
-    const validationResult = validateRequest(req.body);
-
-    if (validationResult === 'typeError') {
-      return res.status(400).json({
-        error: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'',
-      });
+    const bodyValidationResult = validateRequest(req.body);
+    if (bodyValidationResult !== true) {
+      res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
     }
 
-    if (validationResult === 'itemError') {
-      return res.status(400).json({
-        error: 'You supplied an invalid item. An item must be a string of more than three characters.',
-      });
-    }
-
-    if (validationResult === 'detailError') {
-      return res.status(400).json({
-        error: 'Please enter a description of the error that is more than ten characters',
-      });
-    }
-
-    if (validationResult === 'modelError') {
-      return res.status(400).json({
-        error: 'Please enter a valid model. A valid model is more than 2 characters',
-      });
-    }
-
-    db.query('UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6', [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.id], (error, result) => {
+    db.query('UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6 and owner = $7', [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.requestId, tokenValidationResult.email], (error, result) => {
       if (error) {
         console.log(error);
         return next(error);
       }
 
       if (result.rowCount < 1) {
-        return res.status(500).json({ message: 'The request was unable to be completed at the moment, please try again later' });
+        return res.status(500).json({ message: `No request with id ${req.params.requestId} was found in the database` });
       }
 
       res.status(200).json({ message: 'You have successfully updated the request' });
