@@ -1,4 +1,4 @@
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
   id serial,
   first_name character varying(11),
   last_name character varying(11),
@@ -7,10 +7,10 @@ CREATE TABLE users(
   password_hash character varying(250),
   created_at time with time zone,
   CONSTRAINT unique_data UNIQUE (email)
-)
+);
 
 
-CREATE TABLE requests(
+CREATE TABLE IF NOT EXISTS requests(
   id serial,
   type character varying(11),
   item character varying(30),
@@ -18,7 +18,7 @@ CREATE TABLE requests(
   detail text,
   status character varying(11),
   owner character varying(40),
-  created_at timestamp with time zone,
-  updated_at timestamp with time zone,
+  created_at time with time zone,
+  updated_at time with time zone,
   CONSTRAINT requests_pkey PRIMARY KEY (id)
-)
+);

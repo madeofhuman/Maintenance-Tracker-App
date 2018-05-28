@@ -3,17 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var users = exports.users = [];
-var requests = exports.requests = [{
-  id: 1,
-  type: 'repair',
-  item: 'Sony Phone',
-  model: 'Xperia Z1',
-  detail: 'Battery runs down very quickly'
-}, {
-  id: 2,
-  type: 'repair',
-  item: 'Sony Phone',
-  model: 'Xperia Z1',
-  detail: 'Battery runs down very quickly'
-}];
+exports.db = undefined;
+
+var _pg = require('pg');
+
+var config = process.env.DATABASE_URL;
+
+var client = new _pg.Client({ config: config });
+client.connect();
+
+var db = exports.db = {
+  query: function query(text, params, callback) {
+    return client.query(text, params, callback);
+  }
+};
