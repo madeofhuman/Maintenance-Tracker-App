@@ -38,7 +38,7 @@ var UserController = function () {
 
   _createClass(UserController, null, [{
     key: 'createUser',
-    value: function createUser(req, res, next) {
+    value: function createUser(req, res) {
       var _req$body = req.body,
           firstName = _req$body.firstName,
           lastName = _req$body.lastName,
