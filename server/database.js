@@ -1,6 +1,11 @@
 import { Client } from 'pg';
 
-const config = process.env.DATABASE_URL;
+const config = {
+  user: process.env.User,
+  database: process.env.Database,
+  password: process.env.Password,
+  port: process.env.Port,
+};
 
 const client = new Client({ config });
 client.connect();
