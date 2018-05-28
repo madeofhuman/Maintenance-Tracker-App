@@ -1,14 +1,10 @@
-import { Pool } from 'pg';
+import { Client } from 'pg';
 
-const config = process.env.DATABASE_URL || {
-  user: process.env.PGUSER,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-};
+const config = process.env.DATABASE_URL;
 
-const pool = new Pool({ config });
+const client = new Client({ config });
+client.connect();
 
 export const db = {
-  query: (text, params, callback) => pool.query(text, params, callback),
+  query: (text, params, callback) => client.query(text, params, callback),
 };
