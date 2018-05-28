@@ -10,7 +10,7 @@ import { db } from '../database';
 const secretKey = process.env.JWT_KEY;
 
 export default class UserController {
-  static createUser(req, res, next) {
+  static createUser(req, res) {
     const {
       firstName, lastName, email, password,
     } = req.body;
