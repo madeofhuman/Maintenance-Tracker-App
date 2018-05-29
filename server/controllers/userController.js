@@ -49,21 +49,23 @@ export default class UserController {
 
     const user = new User(firstName, lastName, email, passwordHash);
 
-    db.query('INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
-      if (error) {
+    db.query(
+      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
+        if (error) {
         // console.log('abc ', error);
-        return res.status(400).json({ message: error.detail });
-      }
+          return res.status(400).json({ message: error.detail });
+        }
 
-      if (result.rowCount < 1) {
-        res.status(500).json({
-          message: 'The user account was unable to be created, please try again later',
-        });
-      }
+        if (result.rowCount < 1) {
+          res.status(500).json({
+            message: 'The user account was unable to be created, please try again later',
+          });
+        }
 
-      res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
-      return res.end();
-    });
+        res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
+      },
+    );
   }
 
   static userLogin(req, res) {
