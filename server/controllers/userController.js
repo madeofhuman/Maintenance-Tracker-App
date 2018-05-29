@@ -63,6 +63,7 @@ export default class UserController {
 
       db.end();
       res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
+      return res.end();
     });
   }
 
