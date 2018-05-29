@@ -121,6 +121,9 @@ var UserController = function () {
           if (bcryptResult) {
             _jsonwebtoken2.default.sign(queryResult.rows[0], secretKey, { expiresIn: '1800s' }, function (jwtError, token) {
               res.set('Content-Type', 'application/json');
+              console.log('user:', queryResult.rows[0]);
+              console.log('secKey:', secretKey);
+              console.log('jwtError:', jwtError);
               console.log('genToken:', token);
               res.status(302).json({ message: 'You\'ve been successfully logged in', token: token });
             });
