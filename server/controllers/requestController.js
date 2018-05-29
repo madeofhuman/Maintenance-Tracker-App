@@ -51,7 +51,7 @@ export default class RequestController {
       res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
     }
 
-    const status = 'pending';
+    const status = 'in-review';
     const owner = tokenValidationResult.email;
     const request = new Request(type, item, model, detail, status, owner);
 
@@ -188,8 +188,6 @@ export default class RequestController {
     if (adminValidationResult !== true) {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }
-
-    console.log(adminValidationResult);
 
     db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
       if (error) {
