@@ -91,10 +91,7 @@ var UserController = function () {
             message: 'The user account was unable to be created, please try again later'
           });
         }
-
-        _database.db.end();
         res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
-        return res.end();
       });
     }
   }, {
