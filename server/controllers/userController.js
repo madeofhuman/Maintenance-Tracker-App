@@ -91,6 +91,7 @@ export default class UserController {
         if (bcryptResult) {
           jwt.sign(queryResult.rows[0], secretKey, { expiresIn: '1800s' }, (jwtError, token) => {
             res.set('Content-Type', 'application/json');
+            console.log('genToken:', token);
             res.status(302).json({ message: 'You\'ve been successfully logged in', token });
           });
         } else {
