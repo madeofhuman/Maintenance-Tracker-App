@@ -7,9 +7,9 @@ exports.db = undefined;
 
 var _pg = require('pg');
 
-var config = process.env.DATABASE_URL || 'postgres://postgres:postgres@db:5432/maintain-r';
+var config = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/maintain-r';
 
-var client = new _pg.Client({ config: config });
+var client = new _pg.Client(config);
 client.connect();
 
 var db = exports.db = {
