@@ -80,11 +80,11 @@ var RequestController = function () {
         res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
       }
 
-      var status = 'pending';
+      // const status = 'pending';
       var owner = tokenValidationResult.email;
-      var request = new _request2.default(type, item, model, detail, status, owner);
+      var request = new _request2.default(type, item, model, detail, owner);
 
-      _database.db.query('INSERT INTO requests (type, item, model, detail, status, owner, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [request.type, request.item, request.model, request.detail, request.status, request.owner, 'NOW()'], function (error, result) {
+      _database.db.query('INSERT INTO requests (type, item, model, detail, owner, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [request.type, request.item, request.model, request.detail, request.owner, 'NOW()'], function (error, result) {
         if (error) {
           res.json(error);
           return next(error);

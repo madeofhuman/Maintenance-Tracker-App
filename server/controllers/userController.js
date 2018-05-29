@@ -53,7 +53,6 @@ export default class UserController {
       'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
         if (error) {
-        // console.log('abc ', error);
           return res.status(400).json({ message: error.detail });
         }
 
@@ -90,12 +89,8 @@ export default class UserController {
       bcrypt.compare(password, queryResult.rows[0].password_hash, (bcryptError, bcryptResult) => {
         if (bcryptResult) {
           jwt.sign(queryResult.rows[0], secretKey, { expiresIn: '1800s' }, (jwtError, token) => {
-            res.set('Content-Type', 'application/json');
-            console.log('user:', queryResult.rows[0]);
-            console.log('secKey:', secretKey);
-            console.log('jwtError:', jwtError);
-            console.log('genToken:', token);
-            res.status(302).json({ message: 'You\'ve been successfully logged in', token });
+            res.set('Token', token);
+            res.status(200).json({ message: 'You\'ve been successfully logged in' });
           });
         } else {
           return res.status(400).json({ message: 'You entered an incorrect password, please review' });
@@ -107,7 +102,6 @@ export default class UserController {
 
   static userLogout(req, res, next) {
     res.headers.token = '';
-    res.token = '';
     res.status(200).redirect('/api/v1');
     next();
   }
