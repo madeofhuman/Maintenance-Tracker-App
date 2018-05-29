@@ -60,10 +60,7 @@ export default class UserController {
           message: 'The user account was unable to be created, please try again later',
         });
       }
-
-      db.end();
       res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
-      return res.end();
     });
   }
 
