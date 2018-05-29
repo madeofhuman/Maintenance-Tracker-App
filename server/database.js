@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 
-const config = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/maintain-r';
+const config = process.env.DATABASE_URL;
 
 const client = new Client(config);
 client.connect();
