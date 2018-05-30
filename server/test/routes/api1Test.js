@@ -1,6 +1,7 @@
 import chai from 'chai';
 import 'chai/register-should';
 import chaiHttp from 'chai-http';
+import { db } from '../../database';
 
 import app from '../../index';
 
@@ -383,6 +384,67 @@ describe('PUT request to /api/v1/requests/:requestId/resolve', () => {
         .put('/api/v1/requests/2/resolve')
         .end((err, res) => {
           res.body.should.be.an('object').with.property('message').equal('Please log in to use the app');
+          done();
+        });
+    });
+  });
+});
+
+describe('User registeration', () => {
+  let validUser;
+  let invalidUser;
+  before((done) => {
+    validUser = {
+      firstName: 'Emmanuel',
+      lastName: 'Nduka',
+      email: 'emmanuelnduka@gmail.com',
+      password: '123456789',
+    };
+    invalidUser = {
+      firstName: 'Emmanuel',
+      lastName: 'Nduka',
+    };
+    db.query('TRUNCATE users');
+    done();
+  });
+
+  describe('Valid Credentials', () => {
+    it('should successfully register the user', (done) => {
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .set('content-type', 'application/json')
+        .send(validUser)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.be.an('object');
+          done();
+        });
+    });
+
+    describe('When email already exists in the database', () => {
+      it('should not register the user', (done) => {
+        chai.request(app)
+          .post('/api/v1/auth/signup')
+          .set('content-type', 'application/json')
+          .send(validUser)
+          .end((err, res) => {
+            res.should.have.status(400);
+            res.body.should.be.an('object');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Invalid Credentials', () => {
+    it('should not register the user', (done) => {
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .set('content-type', 'application/json')
+        .send(invalidUser)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.be.an('object').with.property('error').equal('Please enter a valid email');
           done();
         });
     });

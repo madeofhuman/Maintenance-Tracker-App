@@ -4,11 +4,11 @@
   "description": "An application to create and track maintenance and repair requests",
   "main": "./server/index.js",
   "scripts": {
-    "start:dev": "nodemon ./server/index.js --exec babel-node",
-    "start": "npm run build && node ./dist/index.js",
+    "start:dev": "cross-env NODE_ENV=dev nodemon ./server/index.js --exec babel-node",
+    "start": "cross-env NODE_ENV=production npm run build && node ./dist/index.js",
     "build": "babel server -d dist",
     "serve": "node dist/index.js",
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-register ./server/test --recursive --exit",
+    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register --recursive ./server/test/ --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
@@ -57,6 +57,7 @@
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "cookie-parser": "^1.4.3",
+    "cross-env": "^5.1.6",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",

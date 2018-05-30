@@ -1,25 +1,16 @@
 import dotenv from 'dotenv';
-import Request from '../models/request';
-import { validateRequest, tokenValidator } from '../helpers/validators';
+import Request from '../models/Request';
+import { tokenValidator, processAndValidateInput, validateRequest } from '../helpers/validators';
 import { db } from '../database';
 
 dotenv.config();
 
 export default class RequestController {
   static getRequests(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
+    tokenValidator.validateHeaderToken(req.headers.token, res);
+    tokenValidator.validateToken(req.headers.token, req, res);
 
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
-
-    db.query('SELECT * FROM requests WHERE owner = $1', [tokenValidationResult.email], (error, result) => {
+    db.query('SELECT * FROM requests WHERE owner = $1', [req.user.email], (error, result) => {
       if (error) {
         return next(error);
       }
@@ -33,31 +24,25 @@ export default class RequestController {
   }
 
   static createRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
-    const {
-      type, item, model, detail,
-    } = req.body;
-    const bodyValidationResult = validateRequest(req.body);
-    if (bodyValidationResult !== true) {
-      res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
+    // process and validate user input
+    const validatedRequest = processAndValidateInput(req.body, res); // returning 'undefined'
+
+    if (validatedRequest !== 'valid') {
+      res.status(validatedRequest.errorCode).json(validatedRequest);
     }
 
     const status = 'in-review';
-    const owner = tokenValidationResult.email;
-    const request = new Request(type, item, model, detail, status, owner);
+    const owner = req.user.email;
+    const request = new Request(
+      validatedRequest.type, validatedRequest.item, validatedRequest.model,
+      validatedRequest.detail, status, owner,
+    );
 
     db.query('INSERT INTO requests (type, item, model, detail, status, owner, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [request.type, request.item, request.model, request.detail, request.status, request.owner, 'NOW()'], (error, result) => {
       if (error) {
-        res.json(error);
         return next(error);
       }
 
@@ -70,17 +55,8 @@ export default class RequestController {
   }
 
   static getRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
     const requestId = parseInt(req.params.requestId, 10);
 
@@ -88,7 +64,7 @@ export default class RequestController {
       return res.status(400).json({ error: 'You have entered an invalid request id' });
     }
 
-    db.query('SELECT * FROM requests WHERE owner = $1 AND id = $2', [tokenValidationResult.email, requestId], (error, result) => {
+    db.query('SELECT * FROM requests WHERE owner = $1 AND id = $2', [req.user.email, requestId], (error, result) => {
       if (error) {
         return next(error);
       }
@@ -102,17 +78,8 @@ export default class RequestController {
   }
 
   static deleteRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
     const requestId = parseInt(req.params.requestId, 10);
 
@@ -120,7 +87,7 @@ export default class RequestController {
       return res.status(400).json({ message: 'You have entered an invalid request id. A valid request id is a positive integer.' });
     }
 
-    db.query('DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *', [requestId, tokenValidationResult.email], (error, result) => {
+    db.query('DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *', [requestId, req.user.email], (error, result) => {
       if (error) {
         return next(error);
       }
@@ -134,15 +101,8 @@ export default class RequestController {
   }
 
   static updateRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
     const requestId = parseInt(req.params.requestId, 10);
 
@@ -150,14 +110,28 @@ export default class RequestController {
       return res.status(400).json({ error: 'You have entered an invalid request id' });
     }
 
-    const bodyValidationResult = validateRequest(req.body);
+    const [type, item, model, detail] =
+    Object.values(req.body)
+      .map((value) => {
+        if (typeof value === 'number') {
+          return value.toString();
+        }
+        return value.toLowerCase().trim();
+      });
+
+    const processedBody = {
+      type, item, model, detail,
+    };
+
+    const bodyValidationResult = validateRequest(processedBody);
+
     if (bodyValidationResult !== true) {
       res.status(bodyValidationResult.errorCode).json(bodyValidationResult);
     }
 
     db.query(
-      'UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6 and owner = $7 and status NOT LIKE $8',
-      [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.requestId, tokenValidationResult.email, 'pending'],
+      'UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 WHERE id = $6 and owner = $7 and status NOT LIKE $8 RETURNING *',
+      [req.body.type, req.body.item, req.body.model, req.body.detail, 'NOW()', req.params.requestId, req.user.email, 'pending'],
       (error, result) => {
         if (error) {
           console.log(error);
@@ -168,23 +142,16 @@ export default class RequestController {
           return res.status(500).json({ message: `No unapproved request with id ${req.params.requestId} was found in the database` });
         }
 
-        res.status(200).json({ message: 'You have successfully updated the request' });
+        res.status(200).json({ message: 'You have successfully updated the request', result: result.rows[0] });
       },
     );
   }
 
   static getAllRequests(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
-    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    const adminValidationResult = tokenValidator.validateAdmin(req.user);
     if (adminValidationResult !== true) {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }
@@ -203,17 +170,10 @@ export default class RequestController {
   }
 
   static approveRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
-    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    const adminValidationResult = tokenValidator.validateAdmin(req.user);
     if (adminValidationResult !== true) {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }
@@ -232,17 +192,10 @@ export default class RequestController {
   }
 
   static disapproveRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
-    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    const adminValidationResult = tokenValidator.validateAdmin(req.user);
     if (adminValidationResult !== true) {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }
@@ -261,17 +214,10 @@ export default class RequestController {
   }
 
   static resolveRequest(req, res, next) {
-    if (!req.headers.token || req.headers.token === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-    const tokenValidationResult = tokenValidator.validateToken(req.headers.token);
-    if (!Object.prototype.hasOwnProperty.call(tokenValidationResult, 'id')) {
-      return res.status(tokenValidationResult.errorCode).json(tokenValidationResult);
-    }
+    // check for presence of access token in header and validate
+    tokenValidator.validateHeaderToken(req.headers.token, req, res);
 
-    const adminValidationResult = tokenValidator.validateAdmin(tokenValidationResult);
+    const adminValidationResult = tokenValidator.validateAdmin(req.user);
     if (adminValidationResult !== true) {
       return res.status(adminValidationResult.errorCode).json(adminValidationResult);
     }

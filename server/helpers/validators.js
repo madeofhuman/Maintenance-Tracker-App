@@ -6,45 +6,51 @@ dotenv.config();
 const secretKey = process.env.JWT_KEY;
 
 export const validateRequest = function validateRequestBody(request) {
-  const {
-    type, item, model, detail,
-  } = request;
-
   let result;
 
-  if (type === undefined || (type.toLowerCase() !== 'repair' && type.toLowerCase() !== 'maintenance')) {
-    result = {
-      errorMessage: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'',
-      errorCode: 400,
-    };
-  }
-
-  if ((item === undefined || item.length < 3)) {
-    result = {
-      errorMessage: 'You supplied an invalid item. An item must be a string of more than three characters.',
-      errorCode: 400,
-    };
-  }
-
-  if (type === undefined || type.toLowerCase() === 'repair') {
-    if (detail == null || detail.length < 10) {
+  switch (request) {
+    case (request.type === undefined || (request.type !== 'repair' && request.type !== 'maintenance')):
+      result = {
+        errorMessage: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'',
+        errorCode: 400,
+      };
+      break;
+    case (request.item === undefined || request.item.length < 3):
+      result = {
+        errorMessage: 'You supplied an invalid item. An item must be a string of more than three characters.',
+        errorCode: 400,
+      };
+      break;
+    case (request.type === 'repair' && (request.detail == null || request.detail.length < 10)):
       result = {
         errorMessage: 'Please enter a description of the error that is more than ten characters',
         errorCode: 400,
       };
-    }
+      break;
+    default:
+      result = 'valid';
+      break;
   }
+  return result; // working
+};
 
-  if (model === undefined || model.length < 3) {
-    result = {
-      errorMessage: 'Please enter a valid model. A valid model is more than 2 characters',
-      errorCode: 400,
-    };
-  }
+export const processAndValidateInput = function processAndValidateUserInput(userInput) {
+  // convert input to string and trim spaces
+  const [type, item, model, detail] =
+  Object.values(userInput)
+    .map((value) => {
+      if (typeof value === 'number') {
+        return value.toString();
+      }
+      return value.toLowerCase().trim();
+    });
 
-  result = true;
+  const processedBody = {
+    type, item, model, detail,
+  };
 
-  return result;
+  // validate processed request
+  validateRequest(processedBody); // transferring to this function
 };
 
 export const validateUser = function validateUserBody(user) {
@@ -66,25 +72,18 @@ export const validateUser = function validateUserBody(user) {
 };
 
 export const tokenValidator = {
-  validateToken: (accessToken) => {
-    let result;
-
+  validateToken: (accessToken, req, res) => {
     jwt.verify(accessToken, secretKey, (jwtError, authData) => {
       if (jwtError) {
-        result = {
-          errorMessage: 'Invalid or expired access token, please log in to access the app',
-          errorCode: 400,
-        };
-        return;
+        return res.status(400).json({
+          message: 'Invalid or expired access token, please log in to access the app',
+        });
       }
-
-      result = authData;
+      req.user = authData;
     });
-
-    return result;
   },
 
-  validateAdmin: (authenticatedUser) => {
+  validateAdmin: function validateAdminRole(authenticatedUser) {
     let result;
     if (authenticatedUser.role !== 'admin') {
       result = {
@@ -95,5 +94,15 @@ export const tokenValidator = {
       result = true;
     }
     return result;
+  },
+
+  validateHeaderToken: function validatePresenceOfHeaderToken(headerToken, req, res) {
+    if (!headerToken || headerToken === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
+
+    this.validateToken(headerToken, req, res);
   },
 };
