@@ -27,7 +27,7 @@ Maintenance Tracker is an application that provides users with the ability to re
   3. Add postgres to your PATH on [windows](https://bobbyong.com/blog/installing-postgresql-on-windoes/), [Linux](https://www.postgresql.org/docs/8.3/static/install-post.html), and [Mac](https://postgresapp.com/documentation/install.html)
   4. Run the following command to create the database tables
     ```
-      psql -U [postgres username] -d [postgres dataBase (default is _postgres_)] -f seed.sql
+      psql -U [postgres username] -d [postgres dataBase (default is 'postgres')] -f seed.sql
     ```
   5. Start the local server by running
     ```
