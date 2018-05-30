@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import RequestController from '../controllers/requestController';
-import UserController from '../controllers/userController';
+import RequestController from '../controllers/RequestController';
+import UserController from '../controllers/UserController';
 
 const api1 = express.Router();
 

@@ -1,7 +1,7 @@
 // import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/user';
+import User from '../models/User';
 import { validateUser } from '../helpers/validators';
 import { db } from '../database';
 
