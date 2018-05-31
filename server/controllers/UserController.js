@@ -28,17 +28,20 @@ export default class UserController {
       'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
         if (error) {
-          return res.status(409).json({ message: `The email ${user.email} already exists` });
+          return res.status(409).json({
+            message: `The email ${user.email} already exists. If you're the owner, please log in.`,
+          });
         }
 
         if (result.rowCount < 1) {
           res.status(500).json({
-            message: 'The user account was unable to be created, please try again later',
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
           });
+          return error;
         }
 
         res.status(201).json({
-          message: 'The user has been created successfully',
+          message: 'Yay! The user was successfully created.',
           result: {
             id: result.rows[0].id,
             firstName: result.rows[0].first_name,
@@ -61,14 +64,14 @@ export default class UserController {
     db.query('SELECT * FROM users WHERE email = $1', [trimmedEmail], (queryError, queryResult) => {
       if (queryError) {
         res.status(500).json({
-          error: 'Your request cannot be completed at the moment, please try again later',
+          error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
         });
         return queryError;
       }
 
       if (queryResult.rowCount < 1) {
         return res.status(403).json({
-          message: 'There is no user with the given email, please check your entry',
+          message: 'We couldn\'t find any user with the given email, please check your entry.',
         });
       }
 
@@ -84,10 +87,14 @@ export default class UserController {
         if (bcryptResult) {
           jwt.sign(payload, secretKey, { expiresIn: '1 day' }, (jwtError, token) => {
             res.set('Token', token);
-            res.status(200).json({ message: 'You\'ve been successfully logged in' });
+            res.status(200).json({
+              message: 'You\'ve been successfully logged in. Go forth and do all the things!',
+            });
           });
         } else {
-          return res.status(400).json({ message: 'You entered an incorrect password, please review' });
+          return res.status(400).json({
+            message: 'Oops! The password you entered wasn\'t correct. Please review and try again.',
+          });
         }
       });
     });

@@ -6,7 +6,7 @@ import { db } from '../database';
 dotenv.config();
 
 export default class RequestController {
-  static getRequests(req, res, next) {
+  static getRequests(req, res) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -15,19 +15,27 @@ export default class RequestController {
       'SELECT * FROM requests WHERE owner = $1 ORDER BY id ASC',
       [req.user.email], (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rows < 1) {
-          return res.status(200).json({ message: 'You have no requests' });
+          return res.status(200).json({
+            message: 'You have no requests at the moment. Do you have any item that needs fixing? We love fixing stuff!',
+            result: result.rows,
+          });
         }
 
-        return res.status(200).json(result.rows);
+        return res.status(200).json({
+          result: result.rows,
+        });
       },
     );
   }
 
-  static createRequest(req, res, next) {
+  static createRequest(req, res) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -51,23 +59,28 @@ export default class RequestController {
         request.detail, request.status, request.owner, 'NOW()',
       ], (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rowCount < 1) {
           res.status(500).json({
-            error: 'Your request was unable to be created at the moment, please try again later',
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
           });
+          return error;
         }
 
         res.status(201).json({
-          message: 'Your request was successfuly created and is pending admin approval.',
+          message: 'Yay! Your request was successfuly created and is pending admin approval.',
+          result,
         });
       },
     );
   }
 
-  static getRequest(req, res, next) {
+  static getRequest(req, res) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -82,11 +95,17 @@ export default class RequestController {
       'SELECT * FROM requests WHERE owner = $1 AND id = $2',
       [req.user.email, requestId], (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rows < 1) {
-          return res.status(404).json({ message: 'There is no request with that id' });
+          return res.status(200).json({
+            message: 'You have no request with that id, please try another request id',
+            response: result.rows,
+          });
         }
 
         return res.status(200).json(result.rows);
@@ -94,7 +113,7 @@ export default class RequestController {
     );
   }
 
-  static deleteRequest(req, res, next) {
+  static deleteRequest(req, res) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -112,12 +131,15 @@ export default class RequestController {
       'DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *',
       [requestId, req.user.email], (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rowCount < 1) {
           return res.status(404).json({
-            message: 'The request does not exist',
+            message: 'The request does not exist, please try another request id',
           });
         }
 
@@ -126,14 +148,16 @@ export default class RequestController {
     );
   }
 
-  static updateRequest(req, res, next) {
+  static updateRequest(req, res) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
     if (typeof requestId !== 'number') {
-      return res.status(400).json({ error: 'You have entered an invalid request id' });
+      return res.status(400).json({
+        error: 'You have entered an invalid request id. A valid request id is a positive integer',
+      });
     }
 
     // process and validate user input
@@ -151,17 +175,21 @@ export default class RequestController {
       ],
       (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rowCount < 1) {
           return res.status(404).json({
-            message: `No unapproved request with id ${req.params.requestId} was found in the database`,
+            message: `You have no unapproved request with id ${req.params.requestId}. You cannot edit a request that has been approved.`,
           });
         }
 
         res.status(200).json({
-          message: 'You have successfully updated the request', result: result.rows[0],
+          message: 'You have successfully updated the request',
+          result: result.rows[0],
         });
       },
     );
@@ -176,18 +204,24 @@ export default class RequestController {
     // check if user is admin
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
-        error: 'You need admin access to perform this opertion',
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
       });
     }
 
     // query db for all requests, ordering by id
     db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
       if (error) {
+        res.status(500).json({
+          error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+        });
         return error;
       }
 
       if (result.rows < 1) {
-        return res.status(404).json({ error: 'There are no requests in the system' });
+        return res.status(200).json({
+          message: 'There are no requests in the system. Do we even have people using this app?',
+          response: result.rows,
+        });
       }
 
       return res.status(200).json(result.rows);
@@ -200,7 +234,7 @@ export default class RequestController {
 
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
-        error: 'You need admin access to perform this opertion',
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
       });
     }
 
@@ -213,12 +247,12 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} successfully approved`,
+          message: 'The request was successfully approved. Time to get to work!',
         });
       },
     );
@@ -230,7 +264,7 @@ export default class RequestController {
 
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
-        error: 'You need admin access to perform this opertion',
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
       });
     }
 
@@ -243,12 +277,12 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} successfully disapproved`,
+          message: 'The request was successfully disapproved',
         });
       },
     );
@@ -260,7 +294,7 @@ export default class RequestController {
 
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
-        error: 'You need admin access to perform this opertion',
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
       });
     }
 
@@ -273,12 +307,12 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} completed successfully`,
+          message: 'Yay! The request was resolved successfully',
         });
       },
     );
