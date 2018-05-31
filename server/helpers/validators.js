@@ -72,7 +72,20 @@ export const validateUser = function validateUserBody(user) {
 };
 
 export const tokenValidator = {
-  validateToken: (accessToken, req, res) => {
+  validateAdmin: function validateAdminRole(authenticatedUser, res) {
+    if (authenticatedUser.role !== 'admin') {
+      return res.status(403).json({
+        message: 'You need admin access to perform this opertion',
+      });
+    }
+  },
+
+  validateToken: function validatePresenceAndGenuinenessOfAccessToken(accessToken, req, res) {
+    if (!accessToken || accessToken === 'undefined') {
+      return res.status(401).json({
+        message: 'Please log in to use the app',
+      });
+    }
     jwt.verify(accessToken, secretKey, (jwtError, authData) => {
       if (jwtError) {
         return res.status(400).json({
@@ -81,28 +94,5 @@ export const tokenValidator = {
       }
       req.user = authData;
     });
-  },
-
-  validateAdmin: function validateAdminRole(authenticatedUser) {
-    let result;
-    if (authenticatedUser.role !== 'admin') {
-      result = {
-        errorMessage: 'You need admin access to perform this opertion',
-        errorCode: 403,
-      };
-    } else {
-      result = true;
-    }
-    return result;
-  },
-
-  validateHeaderToken: function validatePresenceOfHeaderToken(headerToken, req, res) {
-    if (!headerToken || headerToken === 'undefined') {
-      return res.status(401).json({
-        message: 'Please log in to use the app',
-      });
-    }
-
-    this.validateToken(headerToken, req, res);
   },
 };
