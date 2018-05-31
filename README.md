@@ -76,6 +76,8 @@ Follow the instructions below to get a copy of the project running on your local
 ISC
 
 # App Links
-  [Pivotal Tracker Board:](https://www.pivotaltracker.com/projects/2170415)
-  [Github Pages:](https://madeofhuman.github.io/Maintenance-Tracker-App/)
-  [Hostedd App:](https://maintain-r.herokuapp.com/)
+  [Pivotal Tracker Board](https://www.pivotaltracker.com/projects/2170415)
+  
+  [Github Pages](https://madeofhuman.github.io/Maintenance-Tracker-App/)
+  
+  [Hosted App](https://maintain-r.herokuapp.com/)
