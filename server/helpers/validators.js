@@ -13,11 +13,11 @@ export const validateRequest = (request, res) => {
     });
   } else if (request.item === undefined || request.item.length < 3) {
     return res.status(400).json({
-      error: 'You supplied an invalid item. An item must be a string of more than three characters.',
+      error: 'You supplied an invalid item. An item can only be a string of more than three characters.',
     });
   } else if (request.type === 'repair' && (request.detail == null || request.detail.length < 10)) {
     return res.status(400).json({
-      error: 'Please enter a description of the error that is more than ten characters',
+      error: 'Please enter a description of the error that is more than ten characters so we can better serve you.',
     });
   }
   return request;
@@ -32,7 +32,7 @@ export const processRequestInput = (input) => {
       if (typeof value === 'number') {
         return value.toString();
       }
-      return value.toLowerCase().trim();
+      return value.trim();
     });
 
   const processedBody = {
@@ -65,7 +65,7 @@ export const validateUser = (processedUserDetails, res) => {
     });
   } else if (password.length < 4) {
     return res.status(400).json({
-      error: 'Please enter a password longer than four characters',
+      error: 'Please enter a password longer than four characters to make it harder for hackers to do bad stuff',
     });
   }
   return processedUserDetails;
@@ -80,7 +80,7 @@ export const processUserInput = (input) => {
       if (typeof value === 'number') {
         return value.toString();
       }
-      return value.toLowerCase().trim();
+      return value.trim();
     });
 
   const processedUserDetails = {
@@ -92,24 +92,25 @@ export const processUserInput = (input) => {
 };
 
 export const tokenValidator = {
-  validateAdmin: (authenticatedUser, res) => {
+  validateAdmin: (authenticatedUser) => {
     if (authenticatedUser.role !== 'admin') {
-      return res.status(403).json({
-        error: 'You need admin access to perform this opertion',
-      });
+      return false;
     }
+    return true;
   },
 
-  validateToken: (accessToken, req, res) => {
-    if (!accessToken || accessToken === 'undefined') {
+  validateToken: (bearerToken, req, res) => {
+    if (!bearerToken || bearerToken === 'undefined') {
       return res.status(401).json({
-        error: 'Please log in to use the app',
+        error: 'You have to be signed in to use the application.',
       });
     }
+    const bearer = bearerToken.split(' ');
+    const accessToken = bearer[1];
     jwt.verify(accessToken, secretKey, (jwtError, authData) => {
       if (jwtError) {
-        return res.status(400).json({
-          error: 'Invalid or expired access token, please log in to access the app',
+        return res.status(401).json({
+          error: 'For security reasons, you have been logged out of the application. Please log in to continue using the app.',
         });
       }
       req.user = authData;

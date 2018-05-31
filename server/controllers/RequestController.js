@@ -6,41 +6,48 @@ import { db } from '../database';
 dotenv.config();
 
 export default class RequestController {
-  static getRequests(req, res, next) {
+  static getRequests(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // query db for user requests ordering by id
     db.query(
       'SELECT * FROM requests WHERE owner = $1 ORDER BY id ASC',
       [req.user.email], (error, result) => {
         if (error) {
-          return next(error);
+          res.status(500).json({
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          });
+          return error;
         }
 
         if (result.rows < 1) {
-          return res.status(404).json({ error: 'You have no requests' });
+          return res.status(200).json({
+            message: 'You have no requests at the moment. Do you have any item that needs fixing? We love fixing stuff!',
+            result: result.rows,
+          });
         }
 
-        return res.status(200).json(result.rows);
+        return res.status(200).json({
+          result: result.rows,
+        });
       },
     );
   }
 
-  static createRequest(req, res, next) {
+  static createRequest(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // process and validate user input
     const processedBody = processRequestInput(req.body);
     const validatedRequest = validateRequest(processedBody, res); // returning 'undefined'
 
     // set auto-generated fields and create request object
-    const status = 'in-review';
     const owner = req.user.email;
     const request = new Request(
       validatedRequest.type, validatedRequest.item, validatedRequest.model,
-      validatedRequest.detail, status, owner,
+      validatedRequest.detail, owner,
     );
 
     // save valid request to db
@@ -52,25 +59,27 @@ export default class RequestController {
         request.detail, request.status, request.owner, 'NOW()',
       ], (error, result) => {
         if (error) {
-          return next(error);
+          return error;
         }
 
         if (result.rowCount < 1) {
           res.status(500).json({
-            error: 'Your request was unable to be created at the moment, please try again later',
+            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
           });
+          return error;
         }
 
         res.status(201).json({
-          message: `Your request with id ${result.rows[0].id} was successfuly created and is pending admin approval.`,
+          message: 'Yay! Your request was successfuly created and is pending admin approval.',
+          request: result.rows[0],
         });
       },
     );
   }
 
-  static getRequest(req, res, next) {
+  static getRequest(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
@@ -83,21 +92,26 @@ export default class RequestController {
       'SELECT * FROM requests WHERE owner = $1 AND id = $2',
       [req.user.email, requestId], (error, result) => {
         if (error) {
-          return next(error);
+          return error;
         }
 
         if (result.rows < 1) {
-          return res.status(404).json({ message: 'There is no request with that id' });
+          return res.status(200).json({
+            message: 'You have no request with that id, please try another request id',
+            request: result.rows,
+          });
         }
 
-        return res.status(200).json(result.rows);
+        return res.status(200).json({
+          request: result.rows,
+        });
       },
     );
   }
 
-  static deleteRequest(req, res, next) {
+  static deleteRequest(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
@@ -113,12 +127,12 @@ export default class RequestController {
       'DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *',
       [requestId, req.user.email], (error, result) => {
         if (error) {
-          return next(error);
+          return error;
         }
 
         if (result.rowCount < 1) {
           return res.status(404).json({
-            message: `No request with id ${req.params.requestId} was found in the database`,
+            message: 'The request does not exist, please try another request id',
           });
         }
 
@@ -127,19 +141,21 @@ export default class RequestController {
     );
   }
 
-  static updateRequest(req, res, next) {
+  static updateRequest(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
     if (typeof requestId !== 'number') {
-      return res.status(400).json({ error: 'You have entered an invalid request id' });
+      return res.status(400).json({
+        error: 'You have entered an invalid request id. A valid request id is a positive integer',
+      });
     }
 
     // process and validate user input
     const processedBody = processRequestInput(req.body);
-    const validatedRequest = validateRequest(processedBody);
+    const validatedRequest = validateRequest(processedBody, res);
 
     // db query to update request only if the reques status isn't pending
     db.query(
@@ -152,17 +168,18 @@ export default class RequestController {
       ],
       (error, result) => {
         if (error) {
-          return next(error);
+          return error;
         }
 
         if (result.rowCount < 1) {
           return res.status(404).json({
-            message: `No unapproved request with id ${req.params.requestId} was found in the database`,
+            message: `You have no unapproved request with id ${req.params.requestId}. You cannot edit a request that has been approved.`,
           });
         }
 
         res.status(200).json({
-          message: 'You have successfully updated the request', result: result.rows[0],
+          message: 'You have successfully updated the request',
+          request: result.rows[0],
         });
       },
     );
@@ -170,21 +187,28 @@ export default class RequestController {
 
 
   // Admin
-  static getAllRequests(req, res, next) {
+  static getAllRequests(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // check if user is admin
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) === false) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
 
     // query db for all requests, ordering by id
     db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
       if (error) {
-        return next(error);
+        return error;
       }
 
       if (result.rows < 1) {
-        return res.status(404).json({ error: 'There are no requests in the system' });
+        return res.status(200).json({
+          message: 'There are no requests in the system. Do we even have people using this app?',
+          request: result.rows,
+        });
       }
 
       return res.status(200).json(result.rows);
@@ -193,9 +217,13 @@ export default class RequestController {
 
   static approveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
@@ -206,12 +234,12 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} successfully approved`,
+          message: 'The request was successfully approved. Time to get to work!',
         });
       },
     );
@@ -219,9 +247,13 @@ export default class RequestController {
 
   static disapproveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
@@ -232,12 +264,12 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} successfully disapproved`,
+          message: 'The request was successfully disapproved',
         });
       },
     );
@@ -245,9 +277,13 @@ export default class RequestController {
 
   static resolveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateHeaderToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
@@ -258,12 +294,50 @@ export default class RequestController {
 
         if (result.rows < 1) {
           return res.status(404).json({
-            message: `There is no request with id ${req.params.requestId} in the system`,
+            message: 'The request you\'re looking for does not exist',
           });
         }
 
         return res.status(200).json({
-          message: `Request ${req.params.requestId} completed successfully`,
+          message: 'Yay! The request was resolved successfully',
+        });
+      },
+    );
+  }
+
+  static getARequest(req, res) {
+    // check for presence of access token in header and validate
+    tokenValidator.validateToken(req.headers.authorization, req, res);
+
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
+
+    // parse string requestId in url to integer
+    const requestId = parseInt(req.params.requestId, 10);
+    if (typeof requestId !== 'number') {
+      return res.status(400).json({ error: 'You have entered an invalid request id' });
+    }
+
+    // query db for user request
+    db.query(
+      'SELECT * FROM requests WHERE id = $1',
+      [requestId], (error, result) => {
+        if (error) {
+          return error;
+        }
+
+        if (result.rows < 1) {
+          return res.status(410).json({
+            message: 'There is no request with that id in the database. It may have been deleted.',
+            request: result.rows,
+          });
+        }
+
+        return res.status(200).json({
+          request: result.rows[0],
         });
       },
     );
