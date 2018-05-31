@@ -203,7 +203,7 @@ describe('Request update', () => {
     describe('creates a valid request update', () => {
       it('should successfully update the request', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${1}`)
+          .put(`/api/v1/users/requests/${2}`)
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
           .send(validRequest)
@@ -218,7 +218,7 @@ describe('Request update', () => {
     describe('creates an invalid request', () => {
       it('should not update the request', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${1}`)
+          .put(`/api/v1/users/requests/${2}`)
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
           .send(invalidRequest)
@@ -235,7 +235,7 @@ describe('Request update', () => {
     describe('creates a valid request update', () => {
       it('should ask the user to log in first', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${1}`)
+          .put(`/api/v1/users/requests/${2}`)
           .set('content-type', 'application/json')
           .set('Authorization', 'oausnaksn')
           .send(validRequest)
