@@ -72,10 +72,17 @@ export default class UserController {
         });
       }
 
+      const payload = {
+        firstName: queryResult.rows[0].first_name,
+        lastName: queryResult.rows[0].last_name,
+        email: queryResult.rows[0].email,
+        role: queryResult.rows[0].role,
+      };
+
       // compare password hash and create jwt token
       bcrypt.compare(password, queryResult.rows[0].password_hash, (bcryptError, bcryptResult) => {
         if (bcryptResult) {
-          jwt.sign(queryResult.rows[0], secretKey, { expiresIn: '1800s' }, (jwtError, token) => {
+          jwt.sign(payload, secretKey, { expiresIn: '1 day' }, (jwtError, token) => {
             res.set('Token', token);
             res.status(200).json({ message: 'You\'ve been successfully logged in' });
           });
