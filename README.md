@@ -29,7 +29,7 @@ Follow the instructions below to get a copy of the project running on your local
   Airbnb style
 
 ## 3. How to install
-  1. [Install NodeJS])(https://nodejs.org/en/download/)
+  1. [Install NodeJS](https://nodejs.org/en/download/)
   2. Run the following commands in your terminal to clone the application and install its dependencies:
   ```
   git clone git@github.com:madeofhuman/Maintenance-Tracker-App.git
@@ -81,3 +81,5 @@ ISC
   [Github Pages](https://madeofhuman.github.io/Maintenance-Tracker-App/)
   
   [Hosted App](https://maintain-r.herokuapp.com/)
+
+  [StackOverflow](https://stackoverflow.com/questions)
