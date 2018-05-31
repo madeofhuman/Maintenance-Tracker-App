@@ -31,22 +31,22 @@ Follow the instructions below to get a copy of the project running on your local
 ## 3. How to install
   1. [Install NodeJS])(https://nodejs.org/en/download/)
   2. Run the following commands in your terminal to clone the application and install its dependencies:
-    ```javascript
-    git clone git@github.com:madeofhuman/Maintenance-Tracker-App.git
-    cd Maintenance-Tracker-App
-    npm install
-    ```
+  ```
+  git clone git@github.com:madeofhuman/Maintenance-Tracker-App.git
+  cd Maintenance-Tracker-App
+  npm install
+  ```
   3. The application requires Postgres database, follow the instructions [here](https://www.postgresql.org/download/)
      to download and install it for your operating system.
     3.1. Add postgres to your PATH on [Windows](https://bobbyong.com/blog/installing-postgresql-on-windoes/), [Linux](https://www.postgresql.org/docs/8.3/static/install-post.html), and [Mac](https://postgresapp.com/documentation/install.html)
   5. In the root directory of the application, run the following command to create the database tables
-    ```
-    psql -U [postgres username] -d [postgres dataBase (default is 'postgres')] -f seed.sql
-    ```
+  ```
+  psql -U [postgres username] -d [postgres dataBase (default is 'postgres')] -f seed.sql
+  ```
   6. Start the local server by running
-    ```javascript
-    npm run start:dev
-    ``` 
+  ```
+  npm run start:dev
+  ``` 
 
 ## 4. Working Endpoints
   | Endpoint | Functionality | Note |
@@ -65,7 +65,7 @@ Follow the instructions below to get a copy of the project running on your local
 
 ## 5. Testing
   The app includes some automated tests that test for certain functionalities. The test suite can be run by running the following command in your terminal:
-  ```javascript
+  ```
   npm test
   ```
 
