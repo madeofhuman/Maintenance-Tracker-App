@@ -69,7 +69,7 @@ Follow the instructions below to get a copy of the project running on your local
   npm test
   ```
 
-# Auhor
+# Author
   - Chukwuka Odina
 
 # License
