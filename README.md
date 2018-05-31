@@ -49,18 +49,19 @@ Follow the instructions below to get a copy of the project running on your local
     ``` 
 
 ## 4. Working Endpoints
-  | Endpoint                         | Functionality                                     | Note                       |
-  | -------------------------------- |:-------------------------------------------------:| --------------------------:|
-  | POST /auth/signup                | Register a user                                   |                            |
-  | POST /auth/login                 | Login a user                                      |                            |
-  | GET /users/requests              | Fetch all the requests of a<br>logged-in user   |                              |
-  | GET  /users/requests/<requestId> | Fetch a request that belongs to<br>a logged in user |                          |
-  | POST /users/requests             | Create a request |                                                             |
-  | PUT  /users/requests/<requestId> | Modify a request | Only possible when the admin has approved the request       |
-  | GET  /requests/                  | Fetch all the requests | Only available to admin users |
-  | PUT  /requests/<requestId>/approve | Approve a request | Only available to admin users.<br>When this endpoint is  called, the status of  the request should be  pending. |
-  | PUT  /requests/<requestId>/disapprove | Disapprove a request | Only available to admin users.<br> When this endpoint is called, the status of the resquest should be disapproved |
-  | PUT  /requests/<requestId>/resolve | Resolve a request | Only available to admin users.<br>When this endpoint is called, the status of the request should be resolved |
+  | Endpoint | Functionality | Note |
+|----------------------------------------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| POST /auth/signup | Register a user |  |
+| POST /auth/login | Login a user |  |
+| GET /users/requests | Fetch all the requests of a<br> logged-in user |  |
+| GET  /users/requests/:requestId | Fetch a request that belongs to<br>a logged in user |  |
+| POST /users/requests | Create a request |  |
+| PUT  /users/requests/:requestId | Modify a request | Only possible when the admin<br>has approved the request |
+| DELETE /users/requests/:requestId | Deletes a request |  |
+| GET  /requests/ | Fetch all the requests | Only available to admin users |
+| PUT  /requests/:requestId/approve | Approve a request | Only available to admin users.<br> When this endpoint is called,<br>the status of the request should be pending. |
+| PUT  /requests/:requestId/disapprove | Disapprove a request | Only available to admin users.<br> When this endpoint is called,<br>the status of the request should be disapproved. |
+| PUT  /requests/:requestId/resolve | Resolve a request | Only available to admin users.<br> When this endpoint is called,<br>the status of the request should be resolved. |
 
 ## 5. Testing
   The app includes some automated tests that test for certain functionalities. The test suite can be run by running the following command in your terminal:
