@@ -6,38 +6,31 @@ import app from '../index';
 
 chai.use(chaiHttp);
 
-describe('/GET request to a valid route \'/\'', () => {
+describe('GET request to API home route', () => {
   it('should return a welcome message', (done) => {
     chai.request(app)
-      .get('/')
+      .get('/api/v1')
       .end((err, res) => {
-        res.body.should.be.an('object').with.property('message');
+        res.should.have.status(200);
+        res.body.should.be.an('object').with.property('message').equals('Maintenance Tracker Api V1. Please use /users/requests as a user, or /requests as an admin');
         done();
       });
   });
 });
 
-describe('/GET request to an invalid route \'/oio\'', () => {
+describe('GET request to an invalid route', () => {
   it('should return 404 error', (done) => {
     chai.request(app)
       .get('/oio')
       .end((err, res) => {
         res.should.have.status(404);
-        done();
-      });
-  });
-
-  it('should return an error message', (done) => {
-    chai.request(app)
-      .get('/oio')
-      .end((err, res) => {
         res.body.should.be.an('object').with.property('error');
         done();
       });
   });
 });
 
-describe('/GET request to an unimplemented route \'/ap1/v2\'', () => {
+describe('GET request to an unimplemented route', () => {
   it('should return 501 status', (done) => {
     chai.request(app)
       .get('/api/v2')

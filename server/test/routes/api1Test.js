@@ -13,7 +13,7 @@ describe('/GET request to a valid route \'/api/v1\'', () => {
     chai.request(app)
       .get('/api/v1')
       .end((err, res) => {
-        res.should.have.status(200);
+        res.should.have.status(200).with.property('message').equals('Maintenance Tracker Api V1. Please use /users/requests as a user, or /requests as an admin');
         done();
       });
   });
@@ -35,7 +35,7 @@ describe('/GET request to \'/api/v1/users/requests\'', () => {
       chai.request(app)
         .get('/api/v1/users/requests')
         .end((err, res) => {
-          res.body.should.be.an('object').with.property('message').equal('Please log in to use the app');
+          res.body.should.be.an('object').with.property('error').equal('Please log in to use the app');
           done();
         });
     });

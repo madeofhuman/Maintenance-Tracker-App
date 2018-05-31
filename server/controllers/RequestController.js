@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import Request from '../models/Request';
-import { tokenValidator, processAndValidateInput } from '../helpers/validators';
+import { tokenValidator, processRequestInput, validateRequest } from '../helpers/validators';
 import { db } from '../database';
 
 dotenv.config();
@@ -27,16 +27,13 @@ export default class RequestController {
     );
   }
 
-  // buggy
   static createRequest(req, res, next) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.token, req, res);
 
     // process and validate user input
-    const validatedRequest = processAndValidateInput(req.body, res); // returning 'undefined'
-    if (validatedRequest !== 'valid') {
-      res.status(validatedRequest.errorCode).json(validatedRequest);
-    }
+    const processedBody = processRequestInput(req.body);
+    const validatedRequest = validateRequest(processedBody, res); // returning 'undefined'
 
     // set auto-generated fields and create request object
     const status = 'in-review';
@@ -60,13 +57,12 @@ export default class RequestController {
 
         if (result.rowCount < 1) {
           res.status(500).json({
-            message: 'Your request was unable to be created at the moment, please try again later',
+            error: 'Your request was unable to be created at the moment, please try again later',
           });
         }
 
         res.status(201).json({
-          message: `Your request with id ${result.rows[0].id} was successfuly created and is 
-          pending admin approval.`,
+          message: `Your request with id ${result.rows[0].id} was successfuly created and is pending admin approval.`,
         });
       },
     );
@@ -131,7 +127,6 @@ export default class RequestController {
     );
   }
 
-  // buggy
   static updateRequest(req, res, next) {
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.token, req, res);
@@ -143,10 +138,8 @@ export default class RequestController {
     }
 
     // process and validate user input
-    const validatedRequest = processAndValidateInput(req.body, res); // returning 'undefined'
-    if (validatedRequest !== 'valid') {
-      res.status(validatedRequest.errorCode).json(validatedRequest);
-    }
+    const processedBody = processRequestInput(req.body);
+    const validatedRequest = validateRequest(processedBody);
 
     // db query to update request only if the reques status isn't pending
     db.query(
@@ -159,14 +152,12 @@ export default class RequestController {
       ],
       (error, result) => {
         if (error) {
-          console.log(error);
           return next(error);
         }
 
         if (result.rowCount < 1) {
-          return res.status(500).json({
-            message: `No unapproved request with id ${req.params.requestId} was found 
-            in the database`,
+          return res.status(404).json({
+            message: `No unapproved request with id ${req.params.requestId} was found in the database`,
           });
         }
 
