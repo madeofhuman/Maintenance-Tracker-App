@@ -41,7 +41,7 @@ export default class UserController {
         }
 
         res.status(201).json({
-          message: 'Yay! The user was successfully created.',
+          message: 'Yay! Your account was successfully created.',
           result: {
             id: result.rows[0].id,
             firstName: result.rows[0].first_name,
@@ -58,14 +58,24 @@ export default class UserController {
       email, password,
     } = req.body;
 
+    if (email === undefined) {
+      return res.status(400).json({
+        error: 'Please enter a valid email',
+      });
+    }
+
+    if (password === undefined) {
+      return res.status(400).json({
+        error: 'Please enter a valid password',
+      });
+    }
+
     const trimmedEmail = email.trim();
 
     // query db for user with matching email
     db.query('SELECT * FROM users WHERE email = $1', [trimmedEmail], (queryError, queryResult) => {
       if (queryError) {
-        res.status(500).json({
-          error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-        });
+        res.status(500).json({ er: 'error' });
         return queryError;
       }
 
@@ -93,7 +103,7 @@ export default class UserController {
           });
         } else {
           return res.status(400).json({
-            message: 'Oops! The password you entered wasn\'t correct. Please review and try again.',
+            message: 'Oops! The password you entered isn\'t correct. Please review and try again.',
           });
         }
       });

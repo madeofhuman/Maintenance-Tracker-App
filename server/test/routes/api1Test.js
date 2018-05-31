@@ -9,7 +9,6 @@ import app from '../../index';
 chai.use(chaiHttp);
 
 const userToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJlbW1hbnVlbCIsImxhc3ROYW1lIjoibmR1a2EiLCJlbWFpbCI6ImVtbWFudWVsbmR1a2FAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE1Mjc3OTAzNjcsImV4cCI6MTUyNzg3Njc2N30.WekMpBEgxYNNGWhh3JrdD5iRa8omBoQLgiliDF3W_uo';
-const adminToken = 'Bearer ';
 
 describe('User registeration', () => {
   const validUser = {
@@ -35,7 +34,7 @@ describe('User registeration', () => {
         .send(validUser)
         .end((err, res) => {
           res.should.have.status(201);
-          res.body.should.be.an('object');
+          res.body.should.be.an('object').with.property('message').equals('Yay! Your account was successfully created.');
           done();
         });
     });
@@ -48,7 +47,7 @@ describe('User registeration', () => {
           .send(validUser)
           .end((err, res) => {
             res.should.have.status(409);
-            res.body.should.be.an('object');
+            res.body.should.be.an('object').with.property('message').equals(`The email ${validUser.email} already exists. If you're the owner, please log in.`);
             done();
           });
       });
@@ -103,13 +102,13 @@ describe('User login', () => {
         .send(validAuth)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.be.an('object');
+          res.body.should.be.an('object').with.property('message').equals('You\'ve been successfully logged in. Go forth and do all the things!');
           done();
         });
     });
   });
 
-  describe('With invalid credentials', () => {
+  describe('With invalid password', () => {
     it('should not login the user', (done) => {
       chai.request(app)
         .post('/api/v1/auth/login')
@@ -117,7 +116,7 @@ describe('User login', () => {
         .send(invalidAuth)
         .end((err, res) => {
           res.should.have.status(400);
-          res.body.should.be.an('object');
+          res.body.should.be.an('object').with.property('message').equals('Oops! The password you entered isn\'t correct. Please review and try again.');
           done();
         });
     });
@@ -147,7 +146,7 @@ describe('Request creation', () => {
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(201);
-            res.body.should.be.an('object').with.property('message').equals('Your request was successfuly created and is pending admin approval.');
+            res.body.should.be.an('object').with.property('message').equals('Yay! Your request was successfuly created and is pending admin approval.');
             done();
           });
       });
@@ -179,7 +178,7 @@ describe('Request creation', () => {
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error').equals('Invalid or expired access token, please log in to access the app');
+            res.body.should.be.an('object').with.property('error').equals('For security reasons, you have been logged out of the application. Please log in to continue using the app.');
             done();
           });
       });
@@ -204,7 +203,7 @@ describe('Request update', () => {
     describe('creates a valid request update', () => {
       it('should successfully update the request', (done) => {
         chai.request(app)
-          .put('/api/v1/users/requests/1')
+          .put(`/api/v1/users/requests/${1}`)
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
           .send(validRequest)
@@ -219,7 +218,7 @@ describe('Request update', () => {
     describe('creates an invalid request', () => {
       it('should not update the request', (done) => {
         chai.request(app)
-          .put('/api/v1/users/requests/1')
+          .put(`/api/v1/users/requests/${1}`)
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
           .send(invalidRequest)
@@ -236,13 +235,13 @@ describe('Request update', () => {
     describe('creates a valid request update', () => {
       it('should ask the user to log in first', (done) => {
         chai.request(app)
-          .put('/api/v1/users/requests/1')
+          .put(`/api/v1/users/requests/${1}`)
           .set('content-type', 'application/json')
           .set('Authorization', 'oausnaksn')
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error').equals('Invalid or expired access token, please log in to access the app');
+            res.body.should.be.an('object').with.property('error').equals('For security reasons, you have been logged out of the application. Please log in to continue using the app.');
             done();
           });
       });
@@ -250,5 +249,31 @@ describe('Request update', () => {
   });
 });
 
-// for other tests, generate permanenent user and admin access tokens and pass
-// to req.token before each valid block
+describe('Request retrieval', () => {
+  describe('When an authenticated user gets all their requests', () => {
+    it('should return all their requests', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/requests')
+        .set('content-type', 'application/json')
+        .set('Authorization', `${userToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+  });
+
+  describe('When an authenticated user gets a request', () => {
+    it('should return the specified request', (done) => {
+      chai.request(app)
+        .get(`/api/v1/users/requests/${2}`)
+        .set('content-type', 'application/json')
+        .set('Authorization', `${userToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+  });
+});
+

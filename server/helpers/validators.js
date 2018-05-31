@@ -32,7 +32,7 @@ export const processRequestInput = (input) => {
       if (typeof value === 'number') {
         return value.toString();
       }
-      return value.toLowerCase().trim();
+      return value.trim();
     });
 
   const processedBody = {
@@ -80,7 +80,7 @@ export const processUserInput = (input) => {
       if (typeof value === 'number') {
         return value.toString();
       }
-      return value.toLowerCase().trim();
+      return value.trim();
     });
 
   const processedUserDetails = {
@@ -96,6 +96,7 @@ export const tokenValidator = {
     if (authenticatedUser.role !== 'admin') {
       return false;
     }
+    return true;
   },
 
   validateToken: (bearerToken, req, res) => {

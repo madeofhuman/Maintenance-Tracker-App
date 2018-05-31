@@ -59,9 +59,6 @@ export default class RequestController {
         request.detail, request.status, request.owner, 'NOW()',
       ], (error, result) => {
         if (error) {
-          res.status(500).json({
-            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-          });
           return error;
         }
 
@@ -74,7 +71,7 @@ export default class RequestController {
 
         res.status(201).json({
           message: 'Yay! Your request was successfuly created and is pending admin approval.',
-          result,
+          request: result.rows[0],
         });
       },
     );
@@ -95,20 +92,19 @@ export default class RequestController {
       'SELECT * FROM requests WHERE owner = $1 AND id = $2',
       [req.user.email, requestId], (error, result) => {
         if (error) {
-          res.status(500).json({
-            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-          });
           return error;
         }
 
         if (result.rows < 1) {
           return res.status(200).json({
             message: 'You have no request with that id, please try another request id',
-            response: result.rows,
+            request: result.rows,
           });
         }
 
-        return res.status(200).json(result.rows);
+        return res.status(200).json({
+          request: result.rows,
+        });
       },
     );
   }
@@ -131,9 +127,6 @@ export default class RequestController {
       'DELETE FROM requests WHERE id = $1 AND owner = $2 RETURNING *',
       [requestId, req.user.email], (error, result) => {
         if (error) {
-          res.status(500).json({
-            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-          });
           return error;
         }
 
@@ -175,9 +168,6 @@ export default class RequestController {
       ],
       (error, result) => {
         if (error) {
-          res.status(500).json({
-            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-          });
           return error;
         }
 
@@ -189,7 +179,7 @@ export default class RequestController {
 
         res.status(200).json({
           message: 'You have successfully updated the request',
-          result: result.rows[0],
+          request: result.rows[0],
         });
       },
     );
@@ -202,7 +192,7 @@ export default class RequestController {
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // check if user is admin
-    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+    if (tokenValidator.validateAdmin(req.user, res) === false) {
       return res.status(401).json({
         error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
       });
@@ -211,16 +201,13 @@ export default class RequestController {
     // query db for all requests, ordering by id
     db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
       if (error) {
-        res.status(500).json({
-          error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-        });
         return error;
       }
 
       if (result.rows < 1) {
         return res.status(200).json({
           message: 'There are no requests in the system. Do we even have people using this app?',
-          response: result.rows,
+          request: result.rows,
         });
       }
 
@@ -290,7 +277,7 @@ export default class RequestController {
 
   static resolveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateHeaderToken(req.headers.authorization, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
@@ -313,6 +300,44 @@ export default class RequestController {
 
         return res.status(200).json({
           message: 'Yay! The request was resolved successfully',
+        });
+      },
+    );
+  }
+
+  static getARequest(req, res) {
+    // check for presence of access token in header and validate
+    tokenValidator.validateToken(req.headers.authorization, req, res);
+
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
+
+    // parse string requestId in url to integer
+    const requestId = parseInt(req.params.requestId, 10);
+    if (typeof requestId !== 'number') {
+      return res.status(400).json({ error: 'You have entered an invalid request id' });
+    }
+
+    // query db for user request
+    db.query(
+      'SELECT * FROM requests WHERE id = $1',
+      [requestId], (error, result) => {
+        if (error) {
+          return error;
+        }
+
+        if (result.rows < 1) {
+          return res.status(410).json({
+            message: 'There is no request with that id in the database. It may have been deleted.',
+            request: result.rows,
+          });
+        }
+
+        return res.status(200).json({
+          request: result.rows[0],
         });
       },
     );

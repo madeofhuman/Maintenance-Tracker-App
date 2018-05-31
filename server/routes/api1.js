@@ -22,5 +22,6 @@ api1.get('/requests', RequestController.getAllRequests);
 api1.put('/requests/:requestId/approve', RequestController.approveRequest);
 api1.put('/requests/:requestId/disapprove', RequestController.disapproveRequest);
 api1.put('/requests/:requestId/resolve', RequestController.resolveRequest);
+api1.get('/requests/:requestId', RequestController.getARequest);
 
 export default api1;
