@@ -8,7 +8,7 @@ dotenv.config();
 export default class RequestController {
   static getRequests(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // query db for user requests ordering by id
     db.query(
@@ -19,7 +19,7 @@ export default class RequestController {
         }
 
         if (result.rows < 1) {
-          return res.status(404).json({ error: 'You have no requests' });
+          return res.status(200).json({ message: 'You have no requests' });
         }
 
         return res.status(200).json(result.rows);
@@ -29,18 +29,17 @@ export default class RequestController {
 
   static createRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // process and validate user input
     const processedBody = processRequestInput(req.body);
     const validatedRequest = validateRequest(processedBody, res); // returning 'undefined'
 
     // set auto-generated fields and create request object
-    const status = 'in-review';
     const owner = req.user.email;
     const request = new Request(
       validatedRequest.type, validatedRequest.item, validatedRequest.model,
-      validatedRequest.detail, status, owner,
+      validatedRequest.detail, owner,
     );
 
     // save valid request to db
@@ -62,7 +61,7 @@ export default class RequestController {
         }
 
         res.status(201).json({
-          message: `Your request with id ${result.rows[0].id} was successfuly created and is pending admin approval.`,
+          message: 'Your request was successfuly created and is pending admin approval.',
         });
       },
     );
@@ -70,7 +69,7 @@ export default class RequestController {
 
   static getRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
@@ -97,7 +96,7 @@ export default class RequestController {
 
   static deleteRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
@@ -118,7 +117,7 @@ export default class RequestController {
 
         if (result.rowCount < 1) {
           return res.status(404).json({
-            message: `No request with id ${req.params.requestId} was found in the database`,
+            message: 'The request does not exist',
           });
         }
 
@@ -129,7 +128,7 @@ export default class RequestController {
 
   static updateRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
@@ -170,17 +169,21 @@ export default class RequestController {
 
 
   // Admin
-  static getAllRequests(req, res, next) {
+  static getAllRequests(req, res) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // check if user is admin
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'You need admin access to perform this opertion',
+      });
+    }
 
     // query db for all requests, ordering by id
     db.query('SELECT * FROM requests ORDER BY id ASC', (error, result) => {
       if (error) {
-        return next(error);
+        return error;
       }
 
       if (result.rows < 1) {
@@ -193,9 +196,13 @@ export default class RequestController {
 
   static approveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'You need admin access to perform this opertion',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
@@ -219,9 +226,13 @@ export default class RequestController {
 
   static disapproveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateToken(req.headers.token, req, res);
+    tokenValidator.validateToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'You need admin access to perform this opertion',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
@@ -245,9 +256,13 @@ export default class RequestController {
 
   static resolveRequest(req, res, next) {
     // check for presence of access token in header and validate
-    tokenValidator.validateHeaderToken(req.headers.token, req, res);
+    tokenValidator.validateHeaderToken(req.headers.authorization, req, res);
 
-    tokenValidator.validateAdmin(req.user);
+    if (tokenValidator.validateAdmin(req.user, res) !== true) {
+      return res.status(401).json({
+        error: 'You need admin access to perform this opertion',
+      });
+    }
 
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',

@@ -92,20 +92,20 @@ export const processUserInput = (input) => {
 };
 
 export const tokenValidator = {
-  validateAdmin: (authenticatedUser, res) => {
+  validateAdmin: (authenticatedUser) => {
     if (authenticatedUser.role !== 'admin') {
-      return res.status(403).json({
-        error: 'You need admin access to perform this opertion',
-      });
+      return false;
     }
   },
 
-  validateToken: (accessToken, req, res) => {
-    if (!accessToken || accessToken === 'undefined') {
+  validateToken: (bearerToken, req, res) => {
+    if (!bearerToken || bearerToken === 'undefined') {
       return res.status(401).json({
         error: 'Please log in to use the app',
       });
     }
+    const bearer = bearerToken.split(' ');
+    const accessToken = bearer[1];
     jwt.verify(accessToken, secretKey, (jwtError, authData) => {
       if (jwtError) {
         return res.status(400).json({

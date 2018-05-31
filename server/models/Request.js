@@ -1,10 +1,10 @@
 export default class Request {
-  constructor(type, item, model, detail, status, owner) {
+  constructor(type, item, model, detail, owner) {
     this.type = type;
     this.item = item;
     this.model = model;
     this.detail = detail;
-    this.status = status;
+    this.status = 'in-review';
     this.owner = owner;
   }
 }

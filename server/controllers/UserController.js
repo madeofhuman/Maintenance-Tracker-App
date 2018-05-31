@@ -28,7 +28,7 @@ export default class UserController {
       'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
         if (error) {
-          return res.status(400).json({ message: `The email ${user.email} already exists` });
+          return res.status(409).json({ message: `The email ${user.email} already exists` });
         }
 
         if (result.rowCount < 1) {
@@ -55,8 +55,10 @@ export default class UserController {
       email, password,
     } = req.body;
 
+    const trimmedEmail = email.trim();
+
     // query db for user with matching email
-    db.query('SELECT * FROM users WHERE email = $1', [email], (queryError, queryResult) => {
+    db.query('SELECT * FROM users WHERE email = $1', [trimmedEmail], (queryError, queryResult) => {
       if (queryError) {
         res.status(500).json({
           error: 'Your request cannot be completed at the moment, please try again later',
@@ -65,7 +67,7 @@ export default class UserController {
       }
 
       if (queryResult.rowCount < 1) {
-        return res.status(400).json({
+        return res.status(403).json({
           message: 'There is no user with the given email, please check your entry',
         });
       }
