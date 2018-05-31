@@ -6,7 +6,7 @@ dotenv.config();
 const secretKey = process.env.JWT_KEY;
 
 // validate request body
-export const validateRequest = function validateRequestBody(request, res) {
+export const validateRequest = (request, res) => {
   if (request.type === 'undefined' || (request.type !== 'repair' && request.type !== 'maintenance')) {
     return res.status(400).json({
       error: 'You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'',
@@ -24,7 +24,7 @@ export const validateRequest = function validateRequestBody(request, res) {
 };
 
 // process user request-creation input
-export const processRequestInput = function processUserRequestInput(input) {
+export const processRequestInput = (input) => {
   // convert input to string and trim spaces
   const [type, item, model, detail] =
   Object.values(input)
@@ -42,7 +42,7 @@ export const processRequestInput = function processUserRequestInput(input) {
 };
 
 // validate processed user input
-export const validateUser = function validateUserBody(processedUserDetails, res) {
+export const validateUser = (processedUserDetails, res) => {
   const {
     firstName, lastName, email, password,
   } = processedUserDetails;
@@ -72,7 +72,7 @@ export const validateUser = function validateUserBody(processedUserDetails, res)
 };
 
 // process user signup input
-export const processUserInput = function processUserInput(input) {
+export const processUserInput = (input) => {
   // convert input to string and trim spaces
   const [firstName, lastName, email, password] =
   Object.values(input)
@@ -92,7 +92,7 @@ export const processUserInput = function processUserInput(input) {
 };
 
 export const tokenValidator = {
-  validateAdmin: function validateAdminRole(authenticatedUser, res) {
+  validateAdmin: (authenticatedUser, res) => {
     if (authenticatedUser.role !== 'admin') {
       return res.status(403).json({
         error: 'You need admin access to perform this opertion',
@@ -100,7 +100,7 @@ export const tokenValidator = {
     }
   },
 
-  validateToken: function validatePresenceAndGenuinenessOfAccessToken(accessToken, req, res) {
+  validateToken: (accessToken, req, res) => {
     if (!accessToken || accessToken === 'undefined') {
       return res.status(401).json({
         error: 'Please log in to use the app',
