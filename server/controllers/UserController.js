@@ -2,7 +2,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import { validateUser } from '../helpers/validators';
+import { processUserInput, validateUser } from '../helpers/validators';
 import { db } from '../database';
 
 // dotenv.config();
@@ -11,49 +11,24 @@ const secretKey = process.env.JWT_KEY;
 
 export default class UserController {
   static createUser(req, res) {
+    // process and validate user input
+    const processedUser = processUserInput(req.body);
+    const validatedUser = validateUser(processedUser, res);
+
     const {
       firstName, lastName, email, password,
-    } = req.body;
+    } = validatedUser;
 
-    const validationResult = validateUser(req.body);
-
-    if (validationResult === 'firstNameError') {
-      return res.status(400).json({
-        error: 'Please enter your first name',
-      });
-    }
-
-    if (validationResult === 'lastNameError') {
-      return res.status(400).json({
-        error: 'Please enter your last name',
-      });
-    }
-
-    if (validationResult === 'emailError') {
-      return res.status(400).json({
-        error: 'Please enter a valid email',
-      });
-    }
-
-    if (validationResult === 'passwordError') {
-      return res.status(400).json({
-        error: 'Please enter a password',
-      });
-    }
-
-    if (validationResult === 'passwordLengthError') {
-      return res.send({ error: 'Please enter a longer password' });
-    }
-
+    // set auto-generated fields and create User object
     const passwordHash = bcrypt.hashSync(password, 10);
-
     const user = new User(firstName, lastName, email, passwordHash);
 
+    // save valid user to db
     db.query(
       'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
         if (error) {
-          return res.status(400).json({ message: error.detail });
+          return res.status(400).json({ message: `The email ${user.email} already exists` });
         }
 
         if (result.rowCount < 1) {
@@ -62,7 +37,15 @@ export default class UserController {
           });
         }
 
-        res.status(201).json({ message: 'The user has been created successfully', result: result.rows[0] });
+        res.status(201).json({
+          message: 'The user has been created successfully',
+          result: {
+            id: result.rows[0].id,
+            firstName: result.rows[0].first_name,
+            lastName: result.rows[0].last_name,
+            email: result.rows[0].email,
+          },
+        });
       },
     );
   }
@@ -72,6 +55,7 @@ export default class UserController {
       email, password,
     } = req.body;
 
+    // query db for user with matching email
     db.query('SELECT * FROM users WHERE email = $1', [email], (queryError, queryResult) => {
       if (queryError) {
         res.status(500).json({
@@ -86,6 +70,7 @@ export default class UserController {
         });
       }
 
+      // compare password hash and create jwt token
       bcrypt.compare(password, queryResult.rows[0].password_hash, (bcryptError, bcryptResult) => {
         if (bcryptResult) {
           jwt.sign(queryResult.rows[0], secretKey, { expiresIn: '1800s' }, (jwtError, token) => {
@@ -97,12 +82,5 @@ export default class UserController {
         }
       });
     });
-  }
-
-
-  static userLogout(req, res, next) {
-    res.headers.token = '';
-    res.status(200).redirect('/api/v1');
-    next();
   }
 }
