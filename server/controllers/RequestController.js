@@ -138,7 +138,7 @@ export default class RequestController {
 
     // process and validate user input
     const processedBody = processRequestInput(req.body);
-    const validatedRequest = validateRequest(processedBody);
+    const validatedRequest = validateRequest(processedBody, res);
 
     // db query to update request only if the reques status isn't pending
     db.query(

@@ -8,14 +8,14 @@ import app from '../../index';
 
 chai.use(chaiHttp);
 
-const userToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJkYW5pZWwiLCJsYXN0TmFtZSI6Indpc2UiLCJlbWFpbCI6ImRhbmllbHdpc2VAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE1Mjc3OTM3MjYsImV4cCI6MTUyNzg4MDEyNn0.3Ez3Ysv-kzqnDdh0KzirX3TTOjhNOb1qQZ2DlybH91M';
-const adminToken = '';
+const userToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJlbW1hbnVlbCIsImxhc3ROYW1lIjoibmR1a2EiLCJlbWFpbCI6ImVtbWFudWVsbmR1a2FAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE1Mjc3OTAzNjcsImV4cCI6MTUyNzg3Njc2N30.WekMpBEgxYNNGWhh3JrdD5iRa8omBoQLgiliDF3W_uo';
+const adminToken = 'Bearer ';
 
 describe('User registeration', () => {
   const validUser = {
-    firstName: 'Daniel',
-    lastName: 'Wise',
-    email: 'danielwise@gmail.com',
+    firstName: 'Emmanuel',
+    lastName: 'Nduka',
+    email: 'emmanuelnduka@gmail.com',
     password: '123456789',
   };
   const invalidUser = {
@@ -137,8 +137,8 @@ describe('Request creation', () => {
     model: 'Ice',
     detail: 'It smells rotten',
   };
-  describe('Authenticated user', () => {
-    describe('Valid request', () => {
+  describe('When an authenticated user', () => {
+    describe('creates a valid request', () => {
       it('should successfully create the request', (done) => {
         chai.request(app)
           .post('/api/v1/users/requests')
@@ -153,7 +153,7 @@ describe('Request creation', () => {
       });
     });
 
-    describe('Invalid request', () => {
+    describe('creates an invalid request', () => {
       it('should not create the request', (done) => {
         chai.request(app)
           .post('/api/v1/users/requests')
@@ -163,6 +163,86 @@ describe('Request creation', () => {
           .end((err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object').with.property('error').equals('You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('When an unauthenticated user', () => {
+    describe('creates a valid request', () => {
+      it('should ask the user to log in first', (done) => {
+        chai.request(app)
+          .post('/api/v1/users/requests')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .send(validRequest)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error').equals('Invalid or expired access token, please log in to access the app');
+            done();
+          });
+      });
+    });
+  });
+});
+
+describe('Request update', () => {
+  const validRequest = {
+    type: 'repair',
+    item: 'Fish',
+    model: 'Ice',
+    detail: 'It smells rotten',
+  };
+  const invalidRequest = {
+    type: 'repa',
+    item: 'Fish',
+    model: 'Ice',
+    detail: 'It smells rotten',
+  };
+  describe('When an authenticated user', () => {
+    describe('creates a valid request update', () => {
+      it('should successfully update the request', (done) => {
+        chai.request(app)
+          .put('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', `${userToken}`)
+          .send(validRequest)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('object').with.property('message').equals('You have successfully updated the request');
+            done();
+          });
+      });
+    });
+
+    describe('creates an invalid request', () => {
+      it('should not update the request', (done) => {
+        chai.request(app)
+          .put('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', `${userToken}`)
+          .send(invalidRequest)
+          .end((err, res) => {
+            res.should.have.status(400);
+            res.body.should.be.an('object').with.property('error').equals('You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('When an unauthenticated user', () => {
+    describe('creates a valid request update', () => {
+      it('should ask the user to log in first', (done) => {
+        chai.request(app)
+          .put('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .send(validRequest)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error').equals('Invalid or expired access token, please log in to access the app');
             done();
           });
       });

@@ -108,7 +108,7 @@ export const tokenValidator = {
     const accessToken = bearer[1];
     jwt.verify(accessToken, secretKey, (jwtError, authData) => {
       if (jwtError) {
-        return res.status(400).json({
+        return res.status(401).json({
           error: 'Invalid or expired access token, please log in to access the app',
         });
       }
