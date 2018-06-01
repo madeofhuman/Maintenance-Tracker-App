@@ -186,7 +186,13 @@ export default class RequestController {
 
         res.status(200).json({
           message: 'You have successfully updated the request',
-          request: result.rows[0],
+          request: {
+            id: result.rows[0].id,
+            type: result.rows[0].type,
+            item: result.rows[0].item,
+            model: result.rows[0].model,
+            detail: result.rows[0].detail,
+          },
         });
       },
     );
