@@ -84,6 +84,11 @@ export default class RequestController {
   }
 
   static getRequest(req, res) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -116,6 +121,11 @@ export default class RequestController {
   }
 
   static deleteRequest(req, res) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -148,6 +158,11 @@ export default class RequestController {
   }
 
   static updateRequest(req, res) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -222,6 +237,11 @@ export default class RequestController {
   }
 
   static approveRequest(req, res, next) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -252,6 +272,11 @@ export default class RequestController {
   }
 
   static disapproveRequest(req, res, next) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -282,6 +307,11 @@ export default class RequestController {
   }
 
   static resolveRequest(req, res, next) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
@@ -312,6 +342,11 @@ export default class RequestController {
   }
 
   static getARequest(req, res) {
+    if (typeof req.params.requestId !== 'number') {
+      return res.status(400).json({
+        error: 'please enter a valid numeric request id',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
