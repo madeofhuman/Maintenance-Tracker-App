@@ -30,7 +30,12 @@
 }
 
 #request-btns {
-  display: grid;
+  display: flex;
+  justify-content: space-between;
   height: auto;
   margin-top: 60px;
+}
+
+#approve-btn, #resolve-btn, #reject-btn {
+  border: 0.1 solid #fff;
 }
