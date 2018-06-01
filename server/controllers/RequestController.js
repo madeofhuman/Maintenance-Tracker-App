@@ -71,21 +71,29 @@ export default class RequestController {
 
         res.status(201).json({
           message: 'Yay! Your request was successfuly created and is pending admin approval.',
-          request: result.rows[0],
+          request: {
+            id: result.rows[0].id,
+            type: result.rows[0].type,
+            item: result.rows[0].item,
+            model: result.rows[0].model,
+            detail: result.rows[0].detail,
+          },
         });
       },
     );
   }
 
   static getRequest(req, res) {
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
-    if (typeof requestId !== 'number') {
-      return res.status(400).json({ error: 'You have entered an invalid request id' });
-    }
 
     // query db for user request
     db.query(
@@ -110,17 +118,16 @@ export default class RequestController {
   }
 
   static deleteRequest(req, res) {
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
-    if (typeof requestId !== 'number') {
-      return res.status(400).json({
-        message: `You have entered an invalid request id. 
-        A valid request id is a positive integer.`,
-      });
-    }
 
     // delete request from db
     db.query(
@@ -142,16 +149,16 @@ export default class RequestController {
   }
 
   static updateRequest(req, res) {
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
+      });
+    }
     // check for presence of access token in header and validate
     tokenValidator.validateToken(req.headers.authorization, req, res);
 
     // parse string requestId in url to integer
     const requestId = parseInt(req.params.requestId, 10);
-    if (typeof requestId !== 'number') {
-      return res.status(400).json({
-        error: 'You have entered an invalid request id. A valid request id is a positive integer',
-      });
-    }
 
     // process and validate user input
     const processedBody = processRequestInput(req.body);
@@ -164,7 +171,7 @@ export default class RequestController {
       [
         validatedRequest.type, validatedRequest.item, validatedRequest.model,
         validatedRequest.detail, 'NOW()',
-        req.params.requestId, req.user.email, 'pending',
+        requestId, req.user.email, 'pending',
       ],
       (error, result) => {
         if (error) {
@@ -179,7 +186,13 @@ export default class RequestController {
 
         res.status(200).json({
           message: 'You have successfully updated the request',
-          request: result.rows[0],
+          request: {
+            id: result.rows[0].id,
+            type: result.rows[0].type,
+            item: result.rows[0].item,
+            model: result.rows[0].model,
+            detail: result.rows[0].detail,
+          },
         });
       },
     );
@@ -225,6 +238,12 @@ export default class RequestController {
       });
     }
 
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
+      });
+    }
+
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
       ['pending', req.params.requestId], (error, result) => {
@@ -252,6 +271,12 @@ export default class RequestController {
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
         error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
+
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
       });
     }
 
@@ -285,6 +310,12 @@ export default class RequestController {
       });
     }
 
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
+      });
+    }
+
     db.query(
       'UPDATE requests SET status = $1 where id = $2 RETURNING *',
       ['resolved', req.params.requestId], (error, result) => {
@@ -312,6 +343,12 @@ export default class RequestController {
     if (tokenValidator.validateAdmin(req.user, res) !== true) {
       return res.status(401).json({
         error: 'Are you trying to go where you should not? You need admin access to see what goes on here.',
+      });
+    }
+
+    if (isNaN(parseInt(req.params.requestId, 10))) {
+      return res.status(400).json({
+        message: 'You have entered an invalid request id. A valid request id is a positive integer.',
       });
     }
 
