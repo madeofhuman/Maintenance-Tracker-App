@@ -29,16 +29,16 @@
 		</span>
 	</div>
 
-	<div class="body">
+	<div class="body" style="background-image:url('../img/spanner-screwdriver.svg');">
 		<div class="wrapper">
 			<div id="table-sort" class="right white">
 				<span>Sort by:</span>
 				<span>
 					<select class="dropdown">
 						<option value="all">All</option>
-						<option value="pending">Pending</option>
-						<option value="approved">Approved</option>
-						<option value="ongoing">Ongoing</option>
+						<option value="pending">In-Review</option>
+						<option value="approved">Pending</option>
+						<option value="ongoing">Disapproved</option>
 						<option value="resolved">Resolved</option>
 					</select>
 				</span>
@@ -66,43 +66,43 @@
 					<tbody>
 						<tr>
 							<td>1</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>iPhone</td>
+							<td>6</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
-							<td>Pending</td>
+							<td>Cracked screen and battery drain</td>
+							<td>In-Review</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>2</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>HP Laptop</td>
+							<td>Envy M6</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
-							<td>Pending</td>
+							<td>It restarts continuously and I think it has a virus infection</td>
+							<td>In-Review</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>3</td>
-							<td>Lorem ipsum</td>
+							<td>Samsung air contition</td>
 							<td>MXC7761</td>
 							<td>Maintenance</td>
 							<td></td>
-							<td>Pending</td>
+							<td>In-Review</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>4</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>A streetcar</td>
+							<td>Desire</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
+							<td>It refuses to start</td>
 							<td>Pending</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
@@ -110,10 +110,10 @@
 						</tr>
 						<tr>
 							<td>5</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>Things</td>
+							<td></td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
+							<td>They fell apart and now the center cannot hold</td>
 							<td>Pending</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
@@ -121,43 +121,43 @@
 						</tr>
 						<tr>
 							<td>6</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>Thermocool Gas Cooker</td>
+							<td>87-C</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
-							<td>Pending</td>
+							<td>The heat produced is very low</td>
+							<td>Resolved</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>7</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>Nokia Phone</td>
+							<td>Lumia 920</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
-							<td>Pending</td>
+							<td>It has a boot loop</td>
+							<td>in-review</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>8</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>HP Printer</td>
+							<td></td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
-							<td>Pending</td>
+							<td>It mangles paper</td>
+							<td>Disapproved</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
 							</td>
 						</tr>
 						<tr>
 							<td>9</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>Logitech Mouse</td>
+							<td>LOGI-96F</td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
+							<td>It cannot connect to bluetooth</td>
 							<td>Pending</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
@@ -165,10 +165,10 @@
 						</tr>
 						<tr>
 							<td>10</td>
-							<td>Lorem ipsum</td>
-							<td>MXC7761</td>
+							<td>Nigeria</td>
+							<td></td>
 							<td>Repair</td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis quae, error at!</td>
+							<td>Nnaa mehn....</td>
 							<td>Pending</td>
 							<td>
 								<input type="button" value="Cancel" class="button">
@@ -184,17 +184,14 @@
 			</span>
 		</div>
 		<br>
+		<div class="divider"></div>
 		<div class="footer white">
 			<p class="left">
 				built with &lt;3 by
-				<a href="javascript:void(0)" title="CJ Odina" class="white">@madeofhuman</a>
+				<a href="https://twitter.com/madeofhuman" title="CJ Odina" class="white">@madeofhuman</a>
 			</p>
 		</div>
 	</div>
-
-	<span class="bg-image right">
-		<img src="../img/spanner-screwdriver.svg" alt="background image">
-	</span>
 </body>
 
 </html>

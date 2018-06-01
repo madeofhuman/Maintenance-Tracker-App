@@ -14,10 +14,10 @@ html{
 	margin: 0px;
 }
 
- body{
+body{
 	background-color: #293032;
 	padding: 0px;
-	height: 100%;
+	height: auto;
 	font-family: 'Rubik', sans-serif;
 	overflow-y: scroll;
 }
@@ -26,10 +26,14 @@ html{
 	height: 100%;
 }
 
-.body{
-	position: absolute;
-	top: 15%;
-	width: 100%
+.footer {
+	position: relative;
+	margin-left: 20px;
+}
+
+.divider{
+	height: 100px;
+	position: relative;
 }
 
 .left {
@@ -42,6 +46,22 @@ html{
 
 .hidden{
 	display: none;
+}
+
+.flex-container{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.body {
+	height: 100%;
+	min-height: 100vh;
+	position: relative;
+  background-repeat: no-repeat;
+  background-attachment: local;
+	background-position: right;
+	background-size: 500px;
 }
 
 .button, .dropdown {
@@ -74,7 +94,7 @@ a{
 }
 
 .green-bg{
-	background-color: darkgreen;
+	background-color: rgb(13, 71, 4);
 }
 
 .red-bg{
@@ -110,7 +130,6 @@ a{
 
 @media (max-width: 845px){
 	.body{
-		position: absolute;
 		top: 10%;
 		width: 100%
 	}
@@ -127,9 +146,9 @@ a{
 		font-size: 1em;
 	}
 
-	.footer {
+	/* .footer {
 		bottom: -1000px;
-	}
+	} */
 
 	#table-sort select{
 		font-size: 0.8em;
@@ -145,9 +164,9 @@ a{
 }
 
 @media (min-width: 845px) {
-	.footer {
+	/* .footer {
 		bottom: -250px;
-	}
+	} */
 }
 
 @media (max-width: 425px) {
