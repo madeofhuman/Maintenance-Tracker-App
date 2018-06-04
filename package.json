@@ -8,7 +8,7 @@
     "start": "cross-env NODE_ENV=production npm run build && node ./dist/index.js",
     "build": "babel server -d dist",
     "serve": "node dist/index.js",
-    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register --recursive ./server/test/ --exit",
+    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register --recursive ./test/ --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
@@ -54,6 +54,7 @@
     "babel-register": "^6.26.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
+    "celebrate": "^8.0.0",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "cookie-parser": "^1.4.3",
@@ -61,6 +62,7 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
+    "morgan": "^1.9.0",
     "nodemon": "^1.17.4",
     "pg": "^7.4.3"
   }

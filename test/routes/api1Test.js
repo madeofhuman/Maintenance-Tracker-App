@@ -2,13 +2,16 @@ import chai from 'chai';
 import 'chai/register-should';
 import chaiHttp from 'chai-http';
 import bcrypt from 'bcrypt';
-import { db } from '../../database';
+import dotenv from 'dotenv';
+import { db } from '../../server/database';
 
-import app from '../../index';
+import app from '../../server/index';
+
+dotenv.config();
 
 chai.use(chaiHttp);
 
-const userToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJlbW1hbnVlbCIsImxhc3ROYW1lIjoibmR1a2EiLCJlbWFpbCI6ImVtbWFudWVsbmR1a2FAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE1Mjc3OTAzNjcsImV4cCI6MTUyNzg3Njc2N30.WekMpBEgxYNNGWhh3JrdD5iRa8omBoQLgiliDF3W_uo';
+const userToken = process.env.USER_TOKEN;
 
 describe('User registeration', () => {
   const validUser = {
@@ -34,7 +37,8 @@ describe('User registeration', () => {
         .send(validUser)
         .end((err, res) => {
           res.should.have.status(201);
-          res.body.should.be.an('object').with.property('message').equals('Yay! Your account was successfully created.');
+          res.body.should.be.an('object').with.property('message')
+            .equals('Yay! Your account was successfully created.');
           done();
         });
     });
@@ -47,7 +51,7 @@ describe('User registeration', () => {
           .send(validUser)
           .end((err, res) => {
             res.should.have.status(409);
-            res.body.should.be.an('object').with.property('message').equals(`The email ${validUser.email} already exists. If you're the owner, please log in.`);
+            res.body.should.be.an('object').with.property('error').equals('Email conflict');
             done();
           });
       });
@@ -62,7 +66,7 @@ describe('User registeration', () => {
         .send(invalidUser)
         .end((err, res) => {
           res.should.have.status(400);
-          res.body.should.be.an('object').with.property('error').equal('Please enter a valid email');
+          res.body.should.be.an('object').with.property('error').equal('Bad Request');
           done();
         });
     });
@@ -88,8 +92,12 @@ describe('User login', () => {
   before((done) => {
     db.query('TRUNCATE TABLE users CASCADE');
     db.query(
-      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
-      [validUser.firstName, validUser.lastName, validUser.email, validUser.role, validUser.password, 'NOW()'],
+      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6)',
+      [
+        validUser.firstName, validUser.lastName, validUser.email,
+        validUser.role, validUser.password, 'NOW()',
+      ],
     );
     done();
   });
@@ -102,7 +110,7 @@ describe('User login', () => {
         .send(validAuth)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.be.an('object').with.property('message').equals('You\'ve been successfully logged in. Go forth and do all the things!');
+          res.body.should.be.an('object').with.property('token');
           done();
         });
     });
@@ -115,8 +123,8 @@ describe('User login', () => {
         .set('content-type', 'application/json')
         .send(invalidAuth)
         .end((err, res) => {
-          res.should.have.status(400);
-          res.body.should.be.an('object').with.property('message').equals('Oops! The password you entered isn\'t correct. Please review and try again.');
+          res.should.have.status(403);
+          res.body.should.be.an('object').with.property('error').equals('Forbidden');
           done();
         });
     });
@@ -146,7 +154,8 @@ describe('Request creation', () => {
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(201);
-            res.body.should.be.an('object').with.property('message').equals('Yay! Your request was successfuly created and is pending admin approval.');
+            res.body.should.be.an('object').with.property('message')
+              .equals('Yay! Your request was successfuly created and is pending admin approval.');
             done();
           });
       });
@@ -161,7 +170,7 @@ describe('Request creation', () => {
           .send(invalidRequest)
           .end((err, res) => {
             res.should.have.status(400);
-            res.body.should.be.an('object').with.property('error').equals('You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'');
+            res.body.should.be.an('object').with.property('error').equals('Bad Request');
             done();
           });
       });
@@ -178,7 +187,8 @@ describe('Request creation', () => {
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error').equals('For security reasons, you have been logged out of the application. Please log in to continue using the app.');
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
             done();
           });
       });
@@ -188,7 +198,7 @@ describe('Request creation', () => {
 
 describe('Request update', () => {
   const validRequest = {
-    type: 'repair',
+    type: 'maintenance',
     item: 'Fish',
     model: 'Ice',
     detail: 'It smells rotten',
@@ -199,17 +209,28 @@ describe('Request update', () => {
     model: 'Ice',
     detail: 'It smells rotten',
   };
+  let requestId;
+  before((done) => {
+    db.query('SELECT * FROM requests ORDER BY id DESC')
+      .then((result) => {
+        const { id } = result.rows[0];
+        requestId = parseInt(id, 10);
+      })
+      .catch(error => console.log(error));
+    done();
+  });
   describe('When an authenticated user', () => {
     describe('creates a valid request update', () => {
       it('should successfully update the request', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${2}`)
+          .put('/api/v1/users/requests/' + requestId)
           .set('content-type', 'application/json')
-          .set('Authorization', `${userToken}`)
+          .set('Authorization', userToken)
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(200);
-            res.body.should.be.an('object').with.property('message').equals('You have successfully updated the request');
+            res.body.should.be.an('object').with.property('message')
+              .equals('You have successfully updated the request');
             done();
           });
       });
@@ -224,7 +245,8 @@ describe('Request update', () => {
           .send(invalidRequest)
           .end((err, res) => {
             res.should.have.status(400);
-            res.body.should.be.an('object').with.property('error').equals('You supplied an invalid request type. A request can only be \'maintenance\' or \'repair\'');
+            res.body.should.be.an('object').with.property('error')
+              .equals('Bad Request');
             done();
           });
       });
@@ -241,7 +263,8 @@ describe('Request update', () => {
           .send(validRequest)
           .end((err, res) => {
             res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error').equals('For security reasons, you have been logged out of the application. Please log in to continue using the app.');
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
             done();
           });
       });
@@ -275,5 +298,79 @@ describe('Request retrieval', () => {
         });
     });
   });
+
+  describe('When an unauthenticated user', () => {
+    describe('tries to get a request', () => {
+      it('should ask the user to log in first', (done) => {
+        chai.request(app)
+          .get(`/api/v1/users/requests/${2}`)
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
+            done();
+          });
+      });
+    });
+  });
 });
 
+describe('Request Deletion', () => {
+  let requestId;
+  before((done) => {
+    db.query('SELECT * FROM requests ORDER BY id DESC')
+      .then((result) => {
+        const { id } = result.rows[0];
+        requestId = parseInt(id, 10);
+      })
+      .catch(error => console.log(error));
+    done();
+  });
+  describe('when authenticated user', () => {
+    describe('supplies a valid request id', () => {
+      it('should succesfully delete the request', (done) => {
+        chai.request(app)
+          .delete(`/api/v1/users/requests/${requestId}`)
+          .set('Authorization', `${userToken}`)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('object').with.property('message').equals('The request was succesfully deleted');
+            done();
+          });
+      });
+    });
+    describe('supplies an ivalid request id', () => {
+      it('should ask the user to supply a valid request id', (done) => {
+        chai.request(app)
+          .delete(`/api/v1/users/requests/${requestId}a`)
+          .set('Authorization', `${userToken}`)
+          .end((err, res) => {
+            res.should.have.status(400);
+            res.body.should.be.an('object').with.property('message')
+              .equals('child "requestId" fails because [you entered an invalid request id. ' +
+              'A request id can only be a positive integer.]');
+            done();
+          });
+      });
+    });
+  });
+});
+
+describe('Admin Operations', () => {
+  describe('When a non-admin user tries to access admin endpoints', () => {
+    it('should return an unauthorized message', (done) => {
+      chai.request(app)
+        .get('/api/v1/requests')
+        .set('Authorization', userToken)
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.should.be.an('object').with.property('message')
+            .equals('Are you trying to go where you should not? ' +
+            'You need admin access to see what goes on here.');
+          done();
+        });
+    });
+  });
+});

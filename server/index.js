@@ -1,11 +1,19 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import fs from 'fs';
+import path from 'path';
+
 import api1 from './routes/api1';
 
 dotenv.config();
 
 const app = express();
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+
+app.use(morgan('combined', { stream: accessLogStream }));
 
 const port = (process.env.PORT || 3000);
 

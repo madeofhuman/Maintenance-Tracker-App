@@ -1,4 +1,7 @@
 import { Client } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 let config;
 
@@ -9,8 +12,11 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 const client = new Client(config);
-client.connect();
+client.connect()
+  .then(() => console.log('connected to postgres db...'))
+  .catch(e => console.error('connection error', e.stack));
 
 export const db = {
-  query: (text, params, callback) => client.query(text, params, callback),
+  // query: (text, params, callback) => client.query(text, params, callback),
+  query: (sql, params) => client.query(sql, params),
 };

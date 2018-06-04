@@ -2,7 +2,7 @@ import chai from 'chai';
 import 'chai/register-should';
 import chaiHttp from 'chai-http';
 
-import app from '../index';
+import app from '../server/index';
 
 chai.use(chaiHttp);
 
@@ -12,7 +12,9 @@ describe('GET request to API home route', () => {
       .get('/api/v1')
       .end((err, res) => {
         res.should.have.status(200);
-        res.body.should.be.an('object').with.property('message').equals('Maintenance Tracker Api V1. Please use /users/requests as a user, or /requests as an admin');
+        res.body.should.be.an('object').with.property('message')
+          .equals('Maintenance Tracker Api V1. Please use /auth/signup tp create an account, ' +
+          '/auth/login to log in, /users/requests/ as a user, or /requests/ as an admin.');
         done();
       });
   });
