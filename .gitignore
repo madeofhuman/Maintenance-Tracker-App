@@ -14,4 +14,4 @@ dist/
 
 .env
 
-server/access.log/
+server/access.log
