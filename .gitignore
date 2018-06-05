@@ -1,0 +1,17 @@
+coverage/
+
+.dev-notes.txt
+
+.coveralls.yml
+
+.vscode/
+
+node_modules/
+
+.nyc_output
+
+dist/
+
+.env
+
+server/access.log/
