@@ -174,3 +174,9 @@ a{
 		margin-top: 60px;
 	}
 }
+
+.back {
+	line-height: 38px;
+	margin-left: 20px;
+	font-size: 1em;
+}
