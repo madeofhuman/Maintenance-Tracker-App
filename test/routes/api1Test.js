@@ -223,7 +223,7 @@ describe('Request update', () => {
     describe('creates a valid request update', () => {
       it('should successfully update the request', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${2}`)
+          .put(`/api/v1/users/requests/${requestId}`)
           .set('content-type', 'application/json')
           .set('Authorization', userToken)
           .send(validRequest)
@@ -332,7 +332,7 @@ describe('Request Deletion', () => {
     describe('supplies a valid request id', () => {
       it('should succesfully delete the request', (done) => {
         chai.request(app)
-          .delete(`/api/v1/users/requests/${2}`)
+          .delete(`/api/v1/users/requests/${requestId}`)
           .set('Authorization', `${userToken}`)
           .end((err, res) => {
             res.should.have.status(200);
@@ -341,7 +341,7 @@ describe('Request Deletion', () => {
           });
       });
     });
-    describe('supplies an ivalid request id', () => {
+    describe('supplies an invalid request id', () => {
       it('should ask the user to supply a valid request id', (done) => {
         chai.request(app)
           .delete(`/api/v1/users/requests/${requestId}a`)
