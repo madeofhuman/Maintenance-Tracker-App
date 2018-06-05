@@ -1,7 +1,6 @@
 import chai from 'chai';
 import 'chai/register-should';
 import chaiHttp from 'chai-http';
-import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { db } from '../../server/database';
 
@@ -13,23 +12,31 @@ chai.use(chaiHttp);
 
 const userToken = process.env.USER_TOKEN;
 
-describe('User registeration', () => {
+describe('User Account Actions', () => {
   const validUser = {
     firstName: 'Emmanuel',
     lastName: 'Nduka',
     email: 'emmanuelnduka@gmail.com',
-    password: '123456789',
+    password: '1123581321',
   };
   const invalidUser = {
     firstName: 'Emmanuel',
     lastName: 'Nduka',
   };
+  const validAuth = {
+    email: 'emmanuelnduka@gmail.com',
+    password: '1123581321',
+  };
+  const invalidAuth = {
+    email: 'emmanuelnduka@gmail.com',
+    password: 'password',
+  };
   before((done) => {
-    db.query('TRUNCATE TABLE users CASCADE');
+    db.query('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
     done();
   });
 
-  describe('With valid credentials', () => {
+  describe('Registeration with valid credentials', () => {
     it('should successfully register the user', (done) => {
       chai.request(app)
         .post('/api/v1/auth/signup')
@@ -58,7 +65,7 @@ describe('User registeration', () => {
     });
   });
 
-  describe('With invalid Credentials', () => {
+  describe('Registeration with invalid credentials', () => {
     it('should not register the user', (done) => {
       chai.request(app)
         .post('/api/v1/auth/signup')
@@ -71,38 +78,8 @@ describe('User registeration', () => {
         });
     });
   });
-});
 
-describe('User login', () => {
-  const validUser = {
-    firstName: 'Emmanuel',
-    lastName: 'Nduka',
-    email: 'emmanuelnduka@gmail.com',
-    role: 'user',
-    password: bcrypt.hashSync('1123581321', 10),
-  };
-  const validAuth = {
-    email: 'emmanuelnduka@gmail.com',
-    password: '1123581321',
-  };
-  const invalidAuth = {
-    email: 'emmanuelnduka@gmail.com',
-    password: 'password',
-  };
-  before((done) => {
-    db.query('TRUNCATE TABLE users CASCADE');
-    db.query(
-      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6)',
-      [
-        validUser.firstName, validUser.lastName, validUser.email,
-        validUser.role, validUser.password, 'NOW()',
-      ],
-    );
-    done();
-  });
-
-  describe('With valid credentials', () => {
+  describe('Login with valid credentials', () => {
     it('should successfully login the user', (done) => {
       chai.request(app)
         .post('/api/v1/auth/login')
@@ -116,7 +93,7 @@ describe('User login', () => {
     });
   });
 
-  describe('With invalid password', () => {
+  describe('Login with invalid credentials', () => {
     it('should not login the user', (done) => {
       chai.request(app)
         .post('/api/v1/auth/login')
@@ -131,7 +108,7 @@ describe('User login', () => {
   });
 });
 
-describe('Request creation', () => {
+describe('Request Actions', () => {
   const validRequest = {
     type: 'repair',
     item: 'Fish',
@@ -144,8 +121,24 @@ describe('Request creation', () => {
     model: 'Ice',
     detail: 'It smells rotten',
   };
-  describe('When an authenticated user', () => {
-    describe('creates a valid request', () => {
+  const validUpdate = {
+    type: 'repair',
+    item: 'Lenovo Phone',
+    model: 'M8',
+    detail: 'It has a notch',
+  };
+  const invalidUpdate = {
+    type: 'maintenances',
+    item: 'Lenovo Phone',
+    model: 'M8',
+    detail: 'It has a notch',
+  };
+  before((done) => {
+    db.query('TRUNCATE TABLE requests RESTART IDENTITY CASCADE');
+    done();
+  });
+  describe('Valid Request Creation', () => {
+    describe('By an authenticated user', () => {
       it('should successfully create the request', (done) => {
         chai.request(app)
           .post('/api/v1/users/requests')
@@ -161,7 +154,25 @@ describe('Request creation', () => {
       });
     });
 
-    describe('creates an invalid request', () => {
+    describe('By an unauthenticated user', () => {
+      it('should ask the user to log in first', (done) => {
+        chai.request(app)
+          .post('/api/v1/users/requests')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .send(validRequest)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Invalid request creation', () => {
+    describe('By an authenticated user', () => {
       it('should not create the request', (done) => {
         chai.request(app)
           .post('/api/v1/users/requests')
@@ -177,57 +188,14 @@ describe('Request creation', () => {
     });
   });
 
-  describe('When an unauthenticated user', () => {
-    describe('creates a valid request', () => {
-      it('should ask the user to log in first', (done) => {
-        chai.request(app)
-          .post('/api/v1/users/requests')
-          .set('content-type', 'application/json')
-          .set('Authorization', 'oausnaksn')
-          .send(validRequest)
-          .end((err, res) => {
-            res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error')
-              .equals('Invalid or expired access token');
-            done();
-          });
-      });
-    });
-  });
-});
-
-describe('Request update', () => {
-  const validRequest = {
-    type: 'maintenance',
-    item: 'Fish',
-    model: 'Ice',
-    detail: 'It smells rotten',
-  };
-  const invalidRequest = {
-    type: 'repa',
-    item: 'Fish',
-    model: 'Ice',
-    detail: 'It smells rotten',
-  };
-  let requestId;
-  before((done) => {
-    db.query('SELECT * FROM requests ORDER BY id DESC')
-      .then((result) => {
-        const { id } = result.rows[0];
-        requestId = id;
-      })
-      .catch(error => console.log(error));
-    done();
-  });
-  describe('When an authenticated user', () => {
-    describe('creates a valid request update', () => {
+  describe('Valid Request Update', () => {
+    describe('By an authenticated user', () => {
       it('should successfully update the request', (done) => {
-        console.log(requestId);
         chai.request(app)
-          .put(`/api/v1/users/requests/${requestId}`)
+          .put('/api/v1/users/requests/1')
           .set('content-type', 'application/json')
           .set('Authorization', userToken)
-          .send(validRequest)
+          .send(validUpdate)
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.an('object').with.property('message')
@@ -237,14 +205,31 @@ describe('Request update', () => {
       });
     });
 
-    describe('creates an invalid request update', () => {
-      it('should not update the request', (done) => {
-        console.log(requestId);
+    describe('By an unauthenticated user', () => {
+      it('should ask the user to log in first', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${requestId}`)
+          .put('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .send(validUpdate)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Invalid Request Update', () => {
+    describe('By an authenticated user', () => {
+      it('should not update the request', (done) => {
+        chai.request(app)
+          .put('/api/v1/users/requests/1')
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
-          .send(invalidRequest)
+          .send(invalidUpdate)
           .end((err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object').with.property('error')
@@ -255,58 +240,24 @@ describe('Request update', () => {
     });
   });
 
-  describe('When an unauthenticated user', () => {
-    describe('creates a valid request update', () => {
-      it('should ask the user to log in first', (done) => {
-        console.log(requestId);
+  describe('Requests Retrieval', () => {
+    describe('By an authenticated user', () => {
+      it('should return all their requests', (done) => {
         chai.request(app)
-          .put(`/api/v1/users/requests/${requestId}`)
+          .get('/api/v1/users/requests')
           .set('content-type', 'application/json')
-          .set('Authorization', 'oausnaksn')
-          .send(validRequest)
+          .set('Authorization', `${userToken}`)
           .end((err, res) => {
-            res.should.have.status(401);
-            res.body.should.be.an('object').with.property('error')
-              .equals('Invalid or expired access token');
+            res.should.have.status(200);
             done();
           });
       });
     });
-  });
-});
 
-describe('Request retrieval', () => {
-  describe('When an authenticated user gets all their requests', () => {
-    it('should return all their requests', (done) => {
-      chai.request(app)
-        .get('/api/v1/users/requests')
-        .set('content-type', 'application/json')
-        .set('Authorization', `${userToken}`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          done();
-        });
-    });
-  });
-
-  describe('When an authenticated user gets a request', () => {
-    it('should return the specified request', (done) => {
-      chai.request(app)
-        .get(`/api/v1/users/requests/${2}`)
-        .set('content-type', 'application/json')
-        .set('Authorization', `${userToken}`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          done();
-        });
-    });
-  });
-
-  describe('When an unauthenticated user', () => {
-    describe('tries to get a request', () => {
+    describe('By an unauthenticated user', () => {
       it('should ask the user to log in first', (done) => {
         chai.request(app)
-          .get(`/api/v1/users/requests/${2}`)
+          .get('/api/v1/users/requests/')
           .set('content-type', 'application/json')
           .set('Authorization', 'oausnaksn')
           .end((err, res) => {
@@ -318,25 +269,57 @@ describe('Request retrieval', () => {
       });
     });
   });
-});
 
-describe('Request Deletion', () => {
-  let requestId;
-  before((done) => {
-    db.query('SELECT * FROM requests ORDER BY id DESC')
-      .then((result) => {
-        const { id } = result.rows[0];
-        requestId = id;
-      })
-      .catch(error => console.log(error));
-    done();
+  describe('Valid Request Retrieval', () => {
+    describe('By an authenticated user', () => {
+      it('should return the specified request', (done) => {
+        chai.request(app)
+          .get('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', `${userToken}`)
+          .end((err, res) => {
+            res.should.have.status(200);
+            done();
+          });
+      });
+    });
+
+    describe('By an unauthenticated user', () => {
+      it('should ask the user to log in first', (done) => {
+        chai.request(app)
+          .get('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
+            done();
+          });
+      });
+    });
   });
-  describe('when authenticated user', () => {
-    describe('supplies a valid request id', () => {
+
+  describe('Invalid Request Retrieval', () => {
+    describe('By an authenticated user', () => {
+      it('should ask the user to enter valid request id', (done) => {
+        chai.request(app)
+          .get('/api/v1/users/requests/q')
+          .set('content-type', 'application/json')
+          .set('Authorization', `${userToken}`)
+          .end((err, res) => {
+            res.should.have.status(400);
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Valid Request Deletion', () => {
+    describe('By an authenticated user', () => {
       it('should succesfully delete the request', (done) => {
-        console.log(requestId);
         chai.request(app)
-          .delete(`/api/v1/users/requests/${requestId}`)
+          .delete('/api/v1/users/requests/1')
           .set('Authorization', `${userToken}`)
           .end((err, res) => {
             res.should.have.status(200);
@@ -345,17 +328,34 @@ describe('Request Deletion', () => {
           });
       });
     });
-    describe('supplies an invalid request id', () => {
-      it('should ask the user to supply a valid request id', (done) => {
-        console.log(requestId);
+
+    describe('By an unauthenticated user', () => {
+      it('should ask the user to log in first', (done) => {
         chai.request(app)
-          .delete(`/api/v1/users/requests/${requestId}a`)
+          .delete('/api/v1/users/requests/1')
+          .set('content-type', 'application/json')
+          .set('Authorization', 'oausnaksn')
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an('object').with.property('error')
+              .equals('Invalid or expired access token');
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Invalid Request Deletion', () => {
+    describe('By an authenticated user', () => {
+      it('should ask the user to supply a valid request id', (done) => {
+        chai.request(app)
+          .delete('/api/v1/users/requests/q')
           .set('Authorization', `${userToken}`)
           .end((err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object').with.property('message')
               .equals('child "requestId" fails because [you entered an invalid request id. ' +
-              'A request id can only be a positive integer.]');
+                'A request id can only be a positive integer.]');
             done();
           });
       });

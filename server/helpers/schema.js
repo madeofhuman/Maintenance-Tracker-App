@@ -34,10 +34,10 @@ export const schema = {
       type: Joi.string().alphanum().valid(['repair', 'maintenance']).required()
         .error(() => 'you entered an invalid request type. ' +
         'A request type can only be \'maintenance\' or \'repair\''),
-      item: Joi.string().alphanum().max(20).required()
+      item: Joi.string().regex(/^[A-z0-9 -]+$/).max(20).required()
         .error(() => 'you entered an invalid item. ' +
         'An item is an alphanumeric string no longer than 20 characters'),
-      model: Joi.string().regex(/^[A-z0-9-]+$/).max(15).default('N/A'),
+      model: Joi.string().regex(/^[A-z0-9 -]+$/).max(15).default('N/A'),
       detail: Joi.string().regex(/^[A-z0-9 ,.-]+$/).max(140).required(),
     }),
     headers: Joi.object({
