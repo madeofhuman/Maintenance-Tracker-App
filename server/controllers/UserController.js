@@ -1,46 +1,43 @@
-// import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import { processUserInput, validateUser } from '../helpers/validators';
 import { db } from '../database';
 
-// dotenv.config();
+dotenv.config();
 
 const secretKey = process.env.JWT_KEY;
 
 export default class UserController {
   static createUser(req, res) {
-    // process and validate user input
-    const processedUser = processUserInput(req.body);
-    const validatedUser = validateUser(processedUser, res);
-
+    // get user input
     const {
       firstName, lastName, email, password,
-    } = validatedUser;
+    } = req.body;
 
-    // set auto-generated fields and create User object
+    // hash password
     const passwordHash = bcrypt.hashSync(password, 10);
+
+    // create user object
     const user = new User(firstName, lastName, email, passwordHash);
 
-    // save valid user to db
+    // save user to db
     db.query(
-      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'], (error, result) => {
-        if (error) {
-          return res.status(409).json({
-            message: `The email ${user.email} already exists. If you're the owner, please log in.`,
-          });
-        }
-
+      'INSERT INTO users (first_name, last_name, email, role, password_hash, created_at) ' +
+      'VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [user.firstName, user.lastName, user.email, user.role, user.password, 'NOW()'],
+    )
+      .then((result) => {
         if (result.rowCount < 1) {
-          res.status(500).json({
-            error: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+          return res.status(500).json({
+            statusCode: 500,
+            error: 'Internal Server Error',
+            message: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
           });
-          return error;
         }
 
         res.status(201).json({
+          statusCode: 201,
           message: 'Yay! Your account was successfully created.',
           result: {
             id: result.rows[0].id,
@@ -49,8 +46,12 @@ export default class UserController {
             email: result.rows[0].email,
           },
         });
-      },
-    );
+      })
+      .catch(() => res.status(409).json({
+        statusCode: 409,
+        error: 'Email conflict',
+        message: `The email ${user.email} already exists. If you are the owner, please log in.`,
+      }));
   }
 
   static userLogin(req, res) {
@@ -58,55 +59,48 @@ export default class UserController {
       email, password,
     } = req.body;
 
-    if (email === undefined) {
-      return res.status(400).json({
-        error: 'Please enter a valid email',
-      });
-    }
-
-    if (password === undefined) {
-      return res.status(400).json({
-        error: 'Please enter a valid password',
-      });
-    }
-
-    const trimmedEmail = email.trim();
-
     // query db for user with matching email
-    db.query('SELECT * FROM users WHERE email = $1', [trimmedEmail], (queryError, queryResult) => {
-      if (queryError) {
-        res.status(500).json({ er: 'error' });
-        return queryError;
-      }
-
-      if (queryResult.rowCount < 1) {
-        return res.status(403).json({
-          message: 'We couldn\'t find any user with the given email, please check your entry.',
-        });
-      }
-
-      const payload = {
-        firstName: queryResult.rows[0].first_name,
-        lastName: queryResult.rows[0].last_name,
-        email: queryResult.rows[0].email,
-        role: queryResult.rows[0].role,
-      };
-
-      // compare password hash and create jwt token
-      bcrypt.compare(password, queryResult.rows[0].password_hash, (bcryptError, bcryptResult) => {
-        if (bcryptResult) {
-          jwt.sign(payload, secretKey, { expiresIn: '1 day' }, (jwtError, token) => {
-            res.set('Token', token);
-            res.status(200).json({
-              message: 'You\'ve been successfully logged in. Go forth and do all the things!',
-            });
-          });
-        } else {
-          return res.status(400).json({
-            message: 'Oops! The password you entered isn\'t correct. Please review and try again.',
+    db.query('SELECT * FROM users WHERE email = $1', [email])
+      .then((result) => {
+        if (result.rowCount < 1) {
+          return res.status(403).json({
+            statusCode: 403,
+            error: 'Forbidden',
+            message: 'The email address you entered does not exist',
           });
         }
+
+        const payload = {
+          firstName: result.rows[0].first_name,
+          lastName: result.rows[0].last_name,
+          email: result.rows[0].email,
+          role: result.rows[0].role,
+        };
+
+        // compare password hash and create jwt token
+        bcrypt.compare(password, result.rows[0].password_hash, (bcryptError, bcryptResult) => {
+          if (bcryptResult) {
+            return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res.status(200).json({
+              statusCode: 200,
+              message: 'You\'ve been successfully logged in. Go forth and do all the things!',
+              token,
+            }));
+          }
+
+          return res.status(403).json({
+            statusCode: 403,
+            error: 'Forbidden',
+            message: 'The password you entered doesn\'t match the email address',
+          });
+        });
+      })
+      .catch((e) => {
+        res.status(500).json({
+          statusCode: 500,
+          error: 'Internal Server Error',
+          message: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
+        });
+        console.error('error', e.stack);
       });
-    });
   }
 }
