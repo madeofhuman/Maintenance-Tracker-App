@@ -214,7 +214,7 @@ describe('Request update', () => {
     db.query('SELECT * FROM requests ORDER BY id DESC')
       .then((result) => {
         const { id } = result.rows[0];
-        requestId = parseInt(id, 10);
+        requestId = id;
       })
       .catch(error => console.log(error));
     done();
@@ -222,6 +222,7 @@ describe('Request update', () => {
   describe('When an authenticated user', () => {
     describe('creates a valid request update', () => {
       it('should successfully update the request', (done) => {
+        console.log(requestId);
         chai.request(app)
           .put(`/api/v1/users/requests/${requestId}`)
           .set('content-type', 'application/json')
@@ -236,10 +237,11 @@ describe('Request update', () => {
       });
     });
 
-    describe('creates an invalid request', () => {
+    describe('creates an invalid request update', () => {
       it('should not update the request', (done) => {
+        console.log(requestId);
         chai.request(app)
-          .put(`/api/v1/users/requests/${2}`)
+          .put(`/api/v1/users/requests/${requestId}`)
           .set('content-type', 'application/json')
           .set('Authorization', `${userToken}`)
           .send(invalidRequest)
@@ -256,8 +258,9 @@ describe('Request update', () => {
   describe('When an unauthenticated user', () => {
     describe('creates a valid request update', () => {
       it('should ask the user to log in first', (done) => {
+        console.log(requestId);
         chai.request(app)
-          .put(`/api/v1/users/requests/${2}`)
+          .put(`/api/v1/users/requests/${requestId}`)
           .set('content-type', 'application/json')
           .set('Authorization', 'oausnaksn')
           .send(validRequest)
@@ -323,7 +326,7 @@ describe('Request Deletion', () => {
     db.query('SELECT * FROM requests ORDER BY id DESC')
       .then((result) => {
         const { id } = result.rows[0];
-        requestId = parseInt(id, 10);
+        requestId = id;
       })
       .catch(error => console.log(error));
     done();
@@ -331,6 +334,7 @@ describe('Request Deletion', () => {
   describe('when authenticated user', () => {
     describe('supplies a valid request id', () => {
       it('should succesfully delete the request', (done) => {
+        console.log(requestId);
         chai.request(app)
           .delete(`/api/v1/users/requests/${requestId}`)
           .set('Authorization', `${userToken}`)
@@ -343,6 +347,7 @@ describe('Request Deletion', () => {
     });
     describe('supplies an invalid request id', () => {
       it('should ask the user to supply a valid request id', (done) => {
+        console.log(requestId);
         chai.request(app)
           .delete(`/api/v1/users/requests/${requestId}a`)
           .set('Authorization', `${userToken}`)
