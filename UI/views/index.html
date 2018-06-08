@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Home | Maintenance Tracker App</title>
+
+  <link rel="stylesheet" type="text/css" href="/static/css/home.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,700" rel="stylesheet">
+  <link rel="shortcut icon" type="image/svg" href="/static/img/gears.svg">
+  <script src="/static/js/jwt-decode.min.js"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <span class="logo left">
+        <a href="/">
+          <img src="/static/img/logo.svg" alt="logo">
+        </a>
+      </span>
+
+      <div class="profile-icon right hidden">
+        <img src="/static/img/profile-icon.svg" alt="profile icon">
+      </div>
+    </div>
+
+    <div class="body" style="background-image:url('/static/img/gears.svg');">
+      <div class="article left">
+        <span class="icon">
+          <img src="/static/img/wrench-hammer.svg" alt="icon">
+
+        </span>
+
+        <span class="text right white">
+          <h2>
+            Nobody should have to live with broken things.
+          </h2>
+          <br>
+          <p>
+            We want to help you fix the things you love, and make sure the things that matter most to you, do not fall to pieces, so
+            you can actually enjoy using them.
+            <br><br>
+            We take great pride in our work and our ability to exceed customer expectation. You, the customer,
+            are our greatest resource and we will treat you accordingly.
+          </p>
+        </span>
+      </div>
+
+      <div id="sign-in-form" class="form hidden right">
+        <form id="login-form">
+          <span id="sign-in-form-close-btn" class="close-btn grey right">x</span>
+          <p class="output white"></p>
+          <label>
+            <span>Email:</span>
+          </label>
+          <input type="text" name="email" id="login-email" required="required">
+          <br>
+          <br>
+          <label>
+            <span>Password:</span>
+          </label>
+          <input type="password" name="password" id="login-password" required="required">
+          <br>
+          <br>
+          <input type="submit" value="Sign in" class="white" id="signin-btn">
+        </form>
+      </div>
+
+      <div id="sign-up-form" class="form hidden right">
+        <form id="signup-form">
+          <span id="sign-up-form-close-btn" class="close-btn grey right">x</span>
+          <p class="output white"></p>
+          <label>
+            <span>First Name:</span>
+          </label>
+          <input type="text" name="firstName" id="first-name" required="required">
+          <br>
+          <br>
+          <label>
+            <span>Last Name:</span>
+          </label>
+          <input type="text" name="lastName" id="last-name" required="required">
+          <br>
+          <br>
+          <label>
+            <span>Email:</span>
+          </label>
+          <input type="text" name="email" id="signup-email" required="required">
+          <br>
+          <br>
+          <label>
+            <span>Password:</span>
+          </label>
+          <input type="password" name="password" id="signup-password" required="required">
+          <br>
+          <br>
+          <label>
+            <span>Confirm password:</span>
+          </label>
+          <input type="password" id="password-confirm" required="required">
+          <br>
+          <br>
+          <input type="submit" value="Sign up" class="orange" id="signup-btn">
+        </form>
+      </div>
+
+      <div id="login-links" class="right">
+        <span class="left link-btn">
+          <span title="Sign in" class="white" id="sign-in-link">Sign in</span>
+        </span>
+        <span class="pipe white">
+          |
+        </span>
+        <span class=" link-btn">
+          <span title="Sign up" class="orange" id="sign-up-link">Sign up</span>
+        </span>
+      </div>
+    </div>
+  </div>
+  <script src="/static/js/home.js" type="text/javascript"></script>
+</body>
+
+</html>
