@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<title>Dashboard | Maintenance Tracker App</title>
+
+	<link rel="stylesheet" type="text/css" href="/static/css/dashboard.css">
+
+	<link href="https://fonts.googleapis.com/css?family=Rubik:300,400,700" rel="stylesheet">
+	<link rel="shortcut icon" type="image/svg" href="/static/img/gears.svg">
+	<script src="/static/js/jwt-decode.min.js"></script>
+	<script src="/static/js/verifyUser.js"></script>
+</head>
+
+<body>
+	<div class="header">
+		<span class="logo left">
+			<a href="/dashboard">
+				<img src="/static/img/logo.svg" alt="logo">
+			</a>
+		</span>
+		<span class="profile-icon right">
+			<span class="text orange">
+				<a href="/logout">Logout</a>
+			</span>
+			<img src="/static/img/profile-icon.svg" alt="profile icon">
+		</span>
+	</div>
+
+	<div class="body" style="background-image:url('/static/img/spanner-screwdriver.svg');">
+		<div class="wrapper">
+			<div class="left white">
+				<span id="username">Welcome, </span>
+			</div>
+			<div id="table-sort" class="right white">
+				<span id="sort-group">
+					<span>Sort by:</span>
+					<span>
+						<select class="dropdown" id="request-status-dropdown">
+							<option value="all">All</option>
+							<option value="pending">In-Review</option>
+							<option value="approved">Pending</option>
+							<option value="ongoing">Disapproved</option>
+							<option value="resolved">Resolved</option>
+						</select>
+					</span>
+				</span>
+				<span>
+					<a href="/new">
+						<input id="new-request-btn" class="button" type="button" value="New Request">
+					</a>
+				</span>
+			</div>
+			<br>
+			<br>
+			<div class="table-wrapper" id="table-wrapper">
+				<br>
+			</div>
+			<span class="table-nav right hidden">
+				<input type="button" value="<" class="button">
+				<input type="button" value=">" class="button">
+			</span>
+		</div>
+		<br>
+		<div class="divider"></div>
+	</div>
+	<script src="/static/js/userDashboard.js"></script>
+</body>
+
+</html>
