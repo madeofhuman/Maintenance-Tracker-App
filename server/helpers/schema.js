@@ -3,42 +3,39 @@ import { Joi } from 'celebrate';
 export const schema = {
   userSchema: {
     body: {
-      firstName: Joi.string().alphanum().max(20).required()
-        .error(() => 'you entered an invalid first name. ' +
-        'A first name is a string that is less than 20 characters.'),
-      lastName: Joi.string().alphanum().max(20).required()
-        .error(() => 'you entered an invalid last name. ' +
-        'A last name is a string that is less than 20 characters.'),
+      firstName: Joi.string().regex(/[A-z]/).max(20).required()
+        .error(() => 'a first name can only contain alphabets, and is less than 21 characters.'),
+      lastName: Joi.string().regex(/[A-z]/).max(20).required()
+        .error(() => 'a last name can only contain alphabets, and is less than 21 characters.'),
       email: Joi.string().email({ minDomainAtoms: 2 }).max(30).required()
-        .error(() => 'you entered an invalid email address. ' +
-        'Please enter a valid email that is less than 21 characters.'),
-      password: Joi.string().regex(/^[A-z0-9]{5,12}$/).required()
-        .error(() => 'you entered an invalid password. ' +
-        'A valid password can only contain letters and numbers, ' +
-        'is greater than 4 characters and less than 13 characters'),
+        .error(() => 'please enter a valid email that is less than 31 characters.'),
+      password: Joi.string().regex(/^[A-z0-9.'-]{5,12}$/).required()
+        .error(() => 'a password can only contain alphabets, numbers, ' +
+        'hyphens, apostrophes, commas, and periods, and is less than 21 characters,'),
     },
   },
   loginSchema: {
     body: {
       email: Joi.string().email({ minDomainAtoms: 2 }).max(30).required()
-        .error(() => 'you entered an invalid email address. ' +
-        'Please enter a valid email that is less than 21 characters.'),
-      password: Joi.string().regex(/^[A-z0-9]{5,12}$/).required()
-        .error(() => 'you entered an invalid password. ' +
-        'A valid password can only contain letters and numbers, ' +
-        'is greater than 4 characters, and less than 13 characters'),
+        .error(() => 'please enter a valid email that is less than 31 characters.'),
+      password: Joi.string().regex(/^[A-z0-9.'-]{5,12}$/).required()
+        .error(() => 'a password can only contain alphabets, numbers, ' +
+        'hyphens, apostrophes, commas, and periods, and is less than 21 characters,'),
     },
   },
   requestSchema: {
     body: Joi.object({
       type: Joi.string().alphanum().valid(['repair', 'maintenance']).required()
-        .error(() => 'you entered an invalid request type. ' +
-        'A request type can only be \'maintenance\' or \'repair\''),
-      item: Joi.string().regex(/^[A-z0-9 -]+$/).max(20).required()
-        .error(() => 'you entered an invalid item. ' +
-        'An item is an alphanumeric string no longer than 20 characters'),
-      model: Joi.string().regex(/^[A-z0-9 -]+$/).max(15).default('N/A'),
-      detail: Joi.string().regex(/^[A-z0-9 ,.-]+$/).max(140).required(),
+        .error(() => 'a request type can only be \'maintenance\' or \'repair\''),
+      item: Joi.string().regex(/^[A-z0-9 -]+$/).max(30).required()
+        .error(() => 'an item can only contain alphabets, numbers, and' +
+        'hyphens, and is less than 31 characters,'),
+      model: Joi.string().regex(/^[A-z0-9 -/]+$/).default('N/A').max(30)
+        .error(() => 'a model can only contain alphabets, numbers, ' +
+        'hyphens, and a forward slash, and is less than 31 characters,'),
+      detail: Joi.string().regex(/^[A-z0-9 ,.'-]+$/).max(140).required()
+        .error(() => 'a detail can only contain alphabets, numbers, ' +
+        'hyphens, apostrophes, commas, and periods, and is less than 141 characters,'),
     }),
     headers: Joi.object({
       authorization: Joi.string().required()
