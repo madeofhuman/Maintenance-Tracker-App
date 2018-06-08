@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>404 | Maintenance Tracker App</title>
+
+  <link rel="stylesheet" type="text/css" href="/static/css/home.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/404.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,700" rel="stylesheet">
+  <link rel="shortcut icon" type="image/svg" href="/static/img/gears.svg">
+  <script src="/static/js/jwt-decode.min.js"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <span class="logo left">
+        <a href="/">
+          <img src="/static/img/logo.svg" alt="logo">
+        </a>
+      </span>
+
+      <div class="profile-icon right hidden">
+        <img src="/static/img/profile-icon.svg" alt="profile icon">
+      </div>
+    </div>
+
+    <div class="body" style="background-image:url('/static/img/gears.svg');">
+      <div class="wrapper white">
+        <h1 class="center" id="four-o-four-message">
+          :'(<br>Nothing exists here. What is the meaning of life?<br>
+        </h1>
+        <em class="center" id="back-btn"><&nbsp&nbsp Go Back</em>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const backButton = document.getElementById('back-btn');
+    backButton.addEventListener('click', () => window.history.back());
+  </script>
+</body>
+</html>

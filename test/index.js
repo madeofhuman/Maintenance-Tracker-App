@@ -26,7 +26,6 @@ describe('GET request to an invalid route', () => {
       .get('/oio')
       .end((err, res) => {
         res.should.have.status(404);
-        res.body.should.be.an('object').with.property('error');
         done();
       });
   });

@@ -30,22 +30,32 @@
 	right: 50px;
 	padding-top: 50px;
 	z-index: 20;
+	border: 1px solid rgba(220, 220, 220, 0.5);
 }
 
-.body .close-btn{
-	width: 15px;
-	height: 15px;
-	border: 1px dashed rgba(220, 220, 220, 0.5);
+form .output {
+	top: -5px;
+	position: relative;
+	width: 300px;
+	z-index: -2;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+form .close-btn{
+	width: 30px;
+	height: 30px;
+	border: 2px dashed rgba(220, 220, 220, 0.5);
 	border-radius: 50%;
 	text-align: center;
-	font-size: 12px;
+	font-size: 20px;
 	cursor: pointer;
 	position: relative;
-	top: -10px;
+	top: -35px;
 }
 
 .body form input{
-	height: 30px;
+	height: 35px;
 	width: 300px;
 	background-color: rgba(0,0,0,0);
 	border: none;
@@ -54,7 +64,6 @@
 	caret-color: rgba(220, 220, 220, 0.5);
 	color: #F2994A;
 	font-size: 1.2em;
-	line-height: 20px;
 }
 
 .body form input:focus{
@@ -63,7 +72,9 @@
 
 .body form label{
 	display: block;
-	color: rgba(220, 220, 220, 0.5);
+	color: rgba(220, 220, 220, 1);
+	font-size: 1.2em;
+	margin-bottom: 10px;
 }
 
 .body form input[type="submit"],
@@ -139,15 +150,60 @@ p{
 		float: none;
 	}
 	.body form{
-		padding: 10px;
+		padding: 30px auto;
 		position: relative;
 		z-index: 20;
+	}
+
+	.form {
+		left: -200px;
+		position: relative;
+	}
+
+	.form .close-btn {
+		top: -35px;
 	}
 
 }
 
 @media (max-width: 700px) {
 	.body .article{
+		width: 80%;
 		padding: 10px 50px;
-	}	
+		height: auto;
+		margin-left: 80px;
+	}
+
+	.article .icon {
+		display: block;
+	}
+
+	.article .icon img {
+		margin-bottom: 20px;
+	}
+
+	.form {
+		left: -130px;
+		position: relative;
+	}
+
+	.form .close-btn {
+		top: -35px;
+	}
+}
+
+@media (max-width: 425px) {
+	.form {
+		left: 0;
+	}
+
+	/* .footer {
+		bottom: -500px;
+	} */
+
+	.body .article {
+		width: 90%;
+		padding: 10px;
+		margin-left: 15px;
+	}
 }

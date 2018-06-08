@@ -1,5 +1,4 @@
 @import url("header.css");
-@import url("footer.css");
 
 /* Common Styles */
 
@@ -14,10 +13,10 @@ html{
 	margin: 0px;
 }
 
- body{
+body{
 	background-color: #293032;
 	padding: 0px;
-	height: 100%;
+	height: auto;
 	font-family: 'Rubik', sans-serif;
 	overflow-y: scroll;
 }
@@ -26,10 +25,14 @@ html{
 	height: 100%;
 }
 
-.body{
-	position: absolute;
-	top: 15%;
-	width: 100%
+.footer {
+	position: relative;
+	margin-left: 20px;
+}
+
+.divider{
+	height: 100px;
+	position: relative;
 }
 
 .left {
@@ -42,6 +45,22 @@ html{
 
 .hidden{
 	display: none;
+}
+
+.flex-container{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.body {
+	height: 100%;
+	min-height: 100vh;
+	position: relative;
+  background-repeat: no-repeat;
+  background-attachment: local;
+	background-position: right;
+	background-size: 500px;
 }
 
 .button, .dropdown {
@@ -74,11 +93,15 @@ a{
 }
 
 .green-bg{
-	background-color: darkgreen;
+	background-color: rgb(13, 71, 4);
 }
 
 .red-bg{
-	background-color: darkred;
+	background-color: rgb(186, 21, 21);
+}
+
+.red{
+	color: darkred;
 }
 
 /* Fix for Chrome's autofill background-color bug (source: https://bit.ly/2It6O7K)*/
@@ -98,7 +121,7 @@ a{
 .bg-image {
 	right: 0px;
 	position: absolute;
-	z-index: -1;
+	z-index: -100;
 }
 
 .bg-image img{
@@ -110,7 +133,6 @@ a{
 
 @media (max-width: 845px){
 	.body{
-		position: absolute;
 		top: 10%;
 		width: 100%
 	}
@@ -120,4 +142,44 @@ a{
 	.body {
 		top: 10%;
 	}
+}
+
+@media (min-width: 403px) {
+	* {
+		font-size: 1em;
+	}
+
+	/* .footer {
+		bottom: -1000px;
+	} */
+
+	#table-sort select{
+		font-size: 0.8em;
+	}
+
+	.body {
+		margin-top: 0px;
+	}
+
+	.logo img {
+		width: 250px;
+	}
+}
+
+@media (min-width: 845px) {
+	/* .footer {
+		bottom: -250px;
+	} */
+}
+
+@media (max-width: 425px) {
+	.body {
+		margin-top: 60px;
+	}
+}
+
+.back > * {
+	line-height: 38px;
+	margin-left: 20px;
+	font-size: 1em;
 }
