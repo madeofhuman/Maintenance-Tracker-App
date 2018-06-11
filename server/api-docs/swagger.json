@@ -1,0 +1,440 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Maintenance Tracker API",
+    "description": "An API for the Maintenance Tracker application",
+    "contact": {
+      "name": "CJ Odina",
+      "url": "https://www.twitter.com/madeofhuman"
+    },
+    "license": {
+      "name": "ISC",
+      "url": "https://www.isc.org/downloads/software-support-policy/isc-license/"
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "host": "maintain-r.herokuapp.com",
+  "basePath": "/api/v1",
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Create a user account",
+        "description": "Creates a new user account",
+        "tags": [
+          "Guest User"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "The user to create",
+            "schema": {
+              "required": [
+                "firstName",
+                "lastName",
+                "email",
+                "password"
+              ],
+              "properties": {
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Account created successfully"
+          },
+          "400": {
+            "description": "Malformed user object"
+          },
+          "409": {
+            "description": "Email already exists"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Log in",
+        "description": "Logs in a user to the application",
+        "tags": [
+          "Guest User"
+        ],
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "description": "The credentials of the user to log in",
+            "schema": {
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful login"
+          },
+          "400": {
+            "description": "Malformed credentials object"
+          },
+          "403": {
+            "description": "Email does not exist or password does not match the email"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/requests": {
+      "get": {
+        "summary": "Get a user's requests",
+        "description": "Returns all requests of the logged-in user",
+        "tags": [
+          "Authenticated User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful requests retrieval"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a request",
+        "description": "Creates a new request",
+        "tags": [
+          "Authenticated User"
+        ],
+        "parameters": [
+          {
+            "name": "request",
+            "in": "body",
+            "description": "The request to create",
+            "schema": {
+              "required": [
+                "type",
+                "item",
+                "description"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "item": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Request created successfully"
+          },
+          "400": {
+            "description": "Malformed request object"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/requests/{requestId}": {
+      "get": {
+        "summary": "Get a user's request",
+        "description": "Returns a specified request of the logged-in user",
+        "tags": [
+          "Authenticated User"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be retrieved",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request retrieval"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a user's request",
+        "description": "Updates a specified request of the logged-in user",
+        "tags": [
+          "Authenticated User"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be updated",
+            "type": "integer"
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "description": "The updated request",
+            "schema": {
+              "required": [
+                "type",
+                "item",
+                "description"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "item": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Request updated successfully"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a user's request",
+        "description": "Deletes a specified request of the logged-in user",
+        "tags": [
+          "Authenticated User"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be deleted",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request deletion"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "404": {
+            "description": "Request not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/requests": {
+      "get": {
+        "summary": "Get all requests",
+        "description": "Gets all the requests in the system",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful requests retrieval"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/requests/{requestId}": {
+      "get": {
+        "summary": "Get a request",
+        "description": "Gets a specified request in the system",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be retrieved",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request retrieval"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "404": {
+            "description": "Request not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/requests/{requestId}/approve": {
+      "put": {
+        "summary": "Approve a request",
+        "description": "Approves a specified request in the system",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be approved",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request approval"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "404": {
+            "description": "Request not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/requests/{requestId}/disapprove": {
+      "put": {
+        "summary": "Disapprove a request",
+        "description": "Disapproves a specified request in the system",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be disapproved",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request disapproval"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "404": {
+            "description": "Request not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/requests/{requestId}/resolve": {
+      "put": {
+        "summary": "Resolve a request",
+        "description": "Resolves a specified request in the system",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the request to be resolved",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request resolution"
+          },
+          "400": {
+            "description": "Malformed requestId"
+          },
+          "404": {
+            "description": "Request not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
