@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import fs from 'fs';
 import path from 'path';
 import swagger from 'swagger-ui-express';
-import swaggerDocument from './api-docs/swagger.json';
+import swaggerDocument from '../api-docs/swagger.json';
 
 import api1 from './routes/api1';
 import client from './routes/client';
