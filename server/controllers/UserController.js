@@ -38,7 +38,7 @@ export default class UserController {
 
         res.status(201).json({
           statusCode: 201,
-          message: 'Yay! Your account was successfully created.',
+          message: 'Yay! Your account was successfully created. You can log in now.',
           result: {
             id: result.rows[0].id,
             firstName: result.rows[0].first_name,
