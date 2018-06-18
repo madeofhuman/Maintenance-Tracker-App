@@ -1,3 +1,4 @@
+/* eslint no-undef:  0 */
 
 /* Page elements */
 const username = document.getElementById('username');
@@ -8,7 +9,6 @@ const sortGroup = document.getElementById('sort-group');
 
 /* Set welocme message */
 const user = JSON.parse(window.localStorage.getItem('User'));
-console.log(user.firstName);
 username.innerHTML += `${user.firstName}.`;
 
 /* Fetch API */

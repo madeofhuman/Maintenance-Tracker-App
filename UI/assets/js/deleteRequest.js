@@ -1,4 +1,6 @@
-/* Fetch API */
+/* eslint no-unused-vars:  0 */
+/* eslint no-undef:  0 */
+
 
 /* Delete request */
 
@@ -17,18 +19,14 @@ const deleteRequest = () => {
       if (result.statusCode !== 200) {
         const textInBracket = result.message.match(/\[(.*?)\]/);
         if (textInBracket) {
-          output.innerHTML = textInBracket[1].toLowerCase();
-          window.location.replace(`/view?id=${param}`);
+          displayMessage(textInBracket, `/view?id=${param}`);
         }
-        output.innerHTML = result.message;
-        window.location.replace(`/view?id=${param}`);
+        displayMessage(result.message, `/view?id=${param}`);
       }
-      output.innerHTML = 'request deleted successfully';
-      const redirectDashboard = () => window.location.replace('/dashboard');
-      setTimeout(redirectDashboard, 2000);
+      displayMessage(result.message, '/dashboard');
     })
     .catch((error) => {
       console.log(error);
-      output.innerHTML = error;
+      displayMessage(error);
     });
 };

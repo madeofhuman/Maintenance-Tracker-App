@@ -32,11 +32,11 @@ describe('GET request to an invalid route', () => {
 });
 
 describe('GET request to an unimplemented route', () => {
-  it('should return 501 status', (done) => {
+  it('should return 404 status', (done) => {
     chai.request(app)
       .get('/api/v2')
       .end((err, res) => {
-        res.should.have.status(501);
+        res.should.have.status(404);
         done();
       });
   });

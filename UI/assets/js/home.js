@@ -1,36 +1,38 @@
+/* eslint no-undef: 0 */
+
 /* Page elements */
 
-const signinLink = document.getElementById('sign-in-link');
-const signinForm = document.getElementById('sign-in-form');
+const loginLink = document.getElementById('sign-in-link');
+const loginFormContainer = document.getElementById('sign-in-form');
 const signupLink = document.getElementById('sign-up-link');
-const signupForm = document.getElementById('sign-up-form');
+const signupFormContainer = document.getElementById('sign-up-form');
 const loginLinks = document.getElementById('login-links');
-const closeSigninFormBtn = document.getElementById('sign-in-form-close-btn');
+const closeLoginFormBtn = document.getElementById('sign-in-form-close-btn');
 const closeSignupFormBtn = document.getElementById('sign-up-form-close-btn');
-const signupform = document.getElementById('signup-form');
+const signupForm = document.getElementById('signup-form');
 const output = document.getElementsByClassName('output');
 const confirmPassword = document.getElementById('password-confirm');
 const loginForm = document.getElementById('login-form');
 
-/* Interactive functions */
+/* Hide and show forms */
 
-signinLink.addEventListener('click', () => {
+loginLink.addEventListener('click', () => {
   hide(loginLinks);
-  unhide(signinForm);
+  unhide(loginFormContainer);
 });
 
 signupLink.addEventListener('click', () => {
   hide(loginLinks);
-  unhide(signupForm);
+  unhide(signupFormContainer);
 });
 
-closeSigninFormBtn.addEventListener('click', () => {
-  hide(signinForm);
+closeLoginFormBtn.addEventListener('click', () => {
+  hide(loginFormContainer);
   unhide(loginLinks);
 });
 
 closeSignupFormBtn.addEventListener('click', () => {
-  hide(signupForm);
+  hide(signupFormContainer);
   unhide(loginLinks);
 });
 
@@ -39,7 +41,7 @@ closeSignupFormBtn.addEventListener('click', () => {
 
 /**
 * Signs up a user
-* @param { String } form - the form element
+* @param { Form } form - the form element
 */
 const signUp = (form) => {
   form.addEventListener('submit', (event) => {
@@ -52,20 +54,23 @@ const signUp = (form) => {
     }
     const method = 'POST';
     const apiPath = '/api/v1/auth/signup';
-    submitForm(formData, apiPath, method);
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    submitForm(formData, apiPath, method, headers, event, '');
   });
 };
 
-signUp(signupform);
+signUp(signupForm);
 
 
 /* Log in */
 
 /**
-* Submits a form to an endpoint with a specified http method
-* @param { String } form - the form element
+* Logs in a user
+* @param { Form } form - the form element
 * @param { String } apiPath - the api path called
-* @param { String } method - the http methos
+* @param { String } method - the http method
 */
 const login = (form) => {
   form.addEventListener('submit', (event) => {
@@ -80,21 +85,12 @@ const login = (form) => {
       body: JSON.stringify(formData),
     }).then(response => response.json())
       .then((result) => {
-        if (result.statusCode !== 200) {
-          const bracket = result.message.match(/\[(.*?)\]/);
-          if (bracket) {
-            output[0].innerHTML = bracket[1].toLowerCase();
-            return;
-          }
-          output[0].innerHTML = result.message.toLowerCase();
-          return;
-        }
-        output[0].innerHTML = result.message.toLowerCase();
+        displayFetchMessage(result, event);
         setToken(result);
         redirectOnLogin(result);
       })
       .catch((error) => {
-        output[0].innerHTML = error.stack;
+        console.log(error.stack);
       });
   });
 };

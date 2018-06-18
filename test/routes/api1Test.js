@@ -45,7 +45,7 @@ describe('User Account Actions', () => {
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.an('object').with.property('message')
-            .equals('Yay! Your account was successfully created.');
+            .equals('Yay! Your account was successfully created. You can log in now.');
           done();
         });
     });
