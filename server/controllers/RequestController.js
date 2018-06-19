@@ -67,7 +67,7 @@ export default class RequestController {
           statusCode: 201,
           error: [],
           message: 'Yay! Your request was successfuly created and is pending admin approval.',
-          request: {
+          result: {
             id: result.rows[0].id,
             type: result.rows[0].type,
             item: result.rows[0].item,
@@ -103,7 +103,7 @@ export default class RequestController {
             statusCode: 500,
             error: [],
             message: 'You have no request with that id, please try another request id',
-            request: result.rows,
+            result: result.rows,
           });
         }
 
@@ -111,7 +111,7 @@ export default class RequestController {
           statusCode: 200,
           error: [],
           message: 'Your request was successfully retrieved',
-          request: result.rows[0],
+          result: result.rows[0],
         });
       })
       .catch(() => res.status(500).json({
@@ -173,7 +173,7 @@ export default class RequestController {
       .then((result) => {
         if (result.rowCount < 1) {
           return res.status(404).json({
-            status: 200,
+            statusCode: 200,
             error: [],
             message: `You have no unapproved request with id ${req.params.requestId}. ` +
             'You cannot edit a request that has been approved.',
@@ -181,10 +181,10 @@ export default class RequestController {
         }
 
         res.status(200).json({
-          status: 200,
+          statusCode: 200,
           error: [],
           message: 'You have successfully updated the request',
-          request: {
+          result: {
             id: result.rows[0].id,
             type: result.rows[0].type,
             item: result.rows[0].item,
@@ -214,7 +214,7 @@ export default class RequestController {
             statusCode: 200,
             error: [],
             message: 'There are no requests in the system. Do we even have people using this app?',
-            request: [],
+            result: [],
           });
         }
 
@@ -338,7 +338,7 @@ export default class RequestController {
           statusCode: 200,
           error: [],
           message: 'The request was successfully retrieved',
-          request: result.rows[0],
+          result: result.rows[0],
         });
       })
       .catch(() => res.status(500).json({

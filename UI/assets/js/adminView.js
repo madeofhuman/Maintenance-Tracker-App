@@ -1,6 +1,7 @@
+/* eslint no-undef:  0 */
+
 /* Page elements */
 const wrapper = document.getElementById('wrapper');
-const output = document.getElementById('output');
 
 /* Fetch API */
 const urlString = window.location.href;
@@ -18,9 +19,8 @@ fetch(requestUrl, {
   .then(response => response.json())
   .then((data) => {
     console.log(data);
-    if (!data.request) {
-      output.innerHTML = 'The request id you entered does not exist';
-      window.location.replace('/admin');
+    if (!data.result) {
+      displayMessage('The request id you entered does not exist', '/admin');
     } else {
       wrapper.innerHTML = `
         <div class="card white">
@@ -45,20 +45,20 @@ fetch(requestUrl, {
           </div>
         </div>
       `;
-      const { request } = data;
+      const { result } = data;
       const requestButtons = document.getElementById('request-btns');
 
-      if (request.status === 'in-review') {
+      if (result.status === 'in-review') {
         requestButtons.innerHTML = `
           <input type="button" onclick="approveRequest()" class="button left green-bg white" id="approve-btn" value="Approve">
           <br>
           <input type="button" onclick="disapproveRequest()" class="button left green-bg white" id="disapprove-btn" value="Disapprove">
         `;
-      } else if (request.status === 'pending') {
+      } else if (result.status === 'pending') {
         requestButtons.innerHTML = `
           <input type="button" onclick="resolveRequest()" class="button left green-bg white" id="resolve-btn" value="Resolve">
         `;
-      } else if (request.status === 'disapproved' || request.status === 'resolved') {
+      } else if (result.status === 'disapproved' || result.status === 'resolved') {
         requestButtons.innerHTML = `
           <input type="button" class="button left green-bg white" id="resolve-btn" value="Request Completed">
         `;
@@ -70,12 +70,12 @@ fetch(requestUrl, {
       const owner = document.getElementById('owner');
       const status = document.getElementById('status');
       const detail = document.getElementById('detail');
-      title.innerHTML = `${request.item}, ${request.type}`;
-      date.innerHTML = `${new Date(request.created_at).toDateString()}`;
-      model.innerHTML = `${request.model} - `;
-      status.innerHTML = `&nbsp${request.status}`;
-      owner.innerHTML = `by ${request.owner}`;
-      detail.innerHTML = `${request.detail}`;
+      title.innerHTML = `${result.item}, ${result.type}`;
+      date.innerHTML = `${new Date(result.created_at).toDateString()}`;
+      model.innerHTML = `${result.model} - `;
+      status.innerHTML = `&nbsp${result.status}`;
+      owner.innerHTML = `by ${result.owner}`;
+      detail.innerHTML = `${result.detail}`;
     }
-  }).catch(error => console.log(error));
+  }).catch(error => console.error(error));
 

@@ -1,105 +1,53 @@
-/* Fetch API */
-
-/* Approve request */
+/* eslint no-unused-vars:  0 */
+/* eslint no-undef:  0 */
 
 /**
-* approve the specified request
+ * Perform admin operations on a request.
+ * @param { String } apiPath - the API path for the request operation
+ */
+const requestOperation = (apiPath) => {
+  fetch(apiPath, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: window.localStorage.getItem('Authorization'),
+    },
+  }).then(response => response.json())
+    .then((result) => {
+      if (result.statusCode !== 200) {
+        const textInBracket = result.message.match(/\[(.*?)\]/);
+        if (textInBracket) {
+          displayMessage(textInBracket, `/admin/view?id=${param}`);
+        }
+        displayMessage(result.message, `/admin/view?id=${param}`);
+      }
+      displayMessage(result.message, '/admin');
+    })
+    .catch((error) => {
+      console.Error(error);
+    });
+};
+
+
+/**
+* Approve the specified request
 */
 const approveRequest = () => {
-  fetch(`${requestUrl}/approve`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: window.localStorage.getItem('Authorization'),
-    },
-  }).then(response => response.json())
-    .then((result) => {
-      if (result.statusCode !== 200) {
-        const textInBracket = result.message.match(/\[(.*?)\]/);
-        if (textInBracket) {
-          output.innerHTML = textInBracket[1].toLowerCase();
-          window.location.replace(`/admin/view?id=${param}`);
-        }
-        output.innerHTML = result.message;
-        window.location.replace(`/admin/view?id=${param}`);
-      }
-      output.innerHTML = 'request approved';
-      const redirectDashboard = () => window.location.replace('/admin');
-      setTimeout(redirectDashboard, 2000);
-    })
-    .catch((error) => {
-      console.log(error);
-      output.innerHTML = error;
-    });
+  requestOperation(`${requestUrl}/approve`);
 };
 
-/* Fetch API */
-
-/* Disapprove request */
 
 /**
-* disapprove the specified request
+* Disapprove the specified request
 */
 const disapproveRequest = () => {
-  fetch(`${requestUrl}/disapprove`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: window.localStorage.getItem('Authorization'),
-    },
-  }).then(response => response.json())
-    .then((result) => {
-      if (result.statusCode !== 200) {
-        const textInBracket = result.message.match(/\[(.*?)\]/);
-        if (textInBracket) {
-          output.innerHTML = textInBracket[1].toLowerCase();
-          window.location.replace(`/admin/view?id=${param}`);
-        }
-        output.innerHTML = result.message;
-        window.location.replace(`/admin/view?id=${param}`);
-      }
-      output.innerHTML = 'request disapproved';
-      const redirectDashboard = () => window.location.replace('/admin');
-      setTimeout(redirectDashboard, 2000);
-    })
-    .catch((error) => {
-      console.log(error);
-      output.innerHTML = error;
-    });
+  requestOperation(`${requestUrl}/disapprove`);
 };
 
-/* Fetch API */
-
-/* Resolve request */
 
 /**
-* resolve the specified request
+* Resolve the specified request
 */
 const resolveRequest = () => {
-  fetch(`${requestUrl}/resolve`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: window.localStorage.getItem('Authorization'),
-    },
-  }).then(response => response.json())
-    .then((result) => {
-      if (result.statusCode !== 200) {
-        const textInBracket = result.message.match(/\[(.*?)\]/);
-        if (textInBracket) {
-          output.innerHTML = textInBracket[1].toLowerCase();
-          window.location.replace(`/admin/view?id=${param}`);
-        }
-        output.innerHTML = result.message;
-        window.location.replace(`/admin/view?id=${param}`);
-      }
-      output.innerHTML = 'request resolved';
-      const redirectDashboard = () => window.location.replace('/admin');
-      setTimeout(redirectDashboard, 2000);
-    })
-    .catch((error) => {
-      console.log(error);
-      output.innerHTML = error;
-    });
+  requestOperation(`${requestUrl}/resolve`);
 };
-

@@ -4,11 +4,10 @@ const username = document.getElementById('username');
 const requestStatusDropdown = document.getElementById('request-status-dropdown');
 const newRequestButton = document.getElementById('new-request-btn');
 const tableWrapper = document.getElementById('table-wrapper');
-const sortGroup = document.getElementById('sort-group');
+const sortGroup = document.getElementById('table-sort');
 
 /* Set welcome message */
 const user = JSON.parse(window.localStorage.getItem('User'));
-console.log(user.firstName);
 username.innerHTML += `${user.firstName}.`;
 
 /* Fetch API */

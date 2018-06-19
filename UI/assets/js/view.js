@@ -1,6 +1,7 @@
+/* eslint no-undef:  0 */
+
 /* Page elements */
 const wrapper = document.getElementById('wrapper');
-const output = document.getElementById('output');
 
 /* Fetch API */
 const urlString = window.location.href;
@@ -17,9 +18,8 @@ fetch(requestUrl, {
 })
   .then(response => response.json())
   .then((data) => {
-    if (data.request.length < 1) {
-      output.innerHTML = 'The request id you entered does not exist';
-      window.location.replace('/dashboard');
+    if (data.result.length < 1) {
+      displayMessage('The request id you entered does not exist', '/dashboard');
     } else {
       wrapper.innerHTML = `
         <div class="card white">
@@ -44,13 +44,13 @@ fetch(requestUrl, {
           </div>
         </div>
       `;
-      const { request } = data;
+      const { result } = data;
       const requestButtons = document.getElementById('request-btns');
 
-      if (request.status === 'in-review') {
+      if (result.status === 'in-review') {
         requestButtons.innerHTML = `
           <br><br>
-          <a href="/edit?id=${data.request.id}"><input type="button" class="button left green-bg white" id="edit-btn" value="      Edit      "></a>
+          <a href="/edit?id=${data.result.id}"><input type="button" class="button left green-bg white" id="edit-btn" value="      Edit      "></a>
           <br>
           <input type="button" onclick="deleteRequest()" class="button left green-bg white" id="delete-btn" value="   Delete   ">
           <br><br>
@@ -63,12 +63,12 @@ fetch(requestUrl, {
       const owner = document.getElementById('owner');
       const status = document.getElementById('status');
       const detail = document.getElementById('detail');
-      title.innerHTML = `${request.item}, ${request.type}`;
-      date.innerHTML = `${new Date(request.created_at).toDateString()}`;
-      model.innerHTML = `${request.model} - `;
-      status.innerHTML = `&nbsp${request.status}`;
-      owner.innerHTML = `by ${request.owner}`;
-      detail.innerHTML = `${request.detail}`;
+      title.innerHTML = `${result.item}, ${result.type}`;
+      date.innerHTML = `${new Date(result.created_at).toDateString()}`;
+      model.innerHTML = `${result.model} - `;
+      status.innerHTML = `&nbsp${result.status}`;
+      owner.innerHTML = `by ${result.owner}`;
+      detail.innerHTML = `${result.detail}`;
     }
   }).catch(error => console.log(error));
 
