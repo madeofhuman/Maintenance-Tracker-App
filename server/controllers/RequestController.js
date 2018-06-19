@@ -100,7 +100,7 @@ export default class RequestController {
       .then((result) => {
         if (result.rows < 1) {
           return res.status(200).json({
-            statusCode: 500,
+            statusCode: 200,
             error: [],
             message: 'You have no request with that id, please try another request id',
             result: result.rows,
