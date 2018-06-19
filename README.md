@@ -26,7 +26,7 @@ Follow the instructions below to get a copy of the project running on your local
   3. PostgreSQL
 
 ## 2. Coding style
-  Airbnb style
+  [Airbnb style](https://github.com/airbnb/javascript)
 
 ## 3. How to install
   1. [Install NodeJS](https://nodejs.org/en/download/)
