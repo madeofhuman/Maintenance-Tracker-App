@@ -26,7 +26,7 @@ const deleteRequest = () => {
       displayMessage(result.message, '/dashboard');
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
       displayMessage(error);
     });
 };

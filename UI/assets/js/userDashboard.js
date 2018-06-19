@@ -71,4 +71,4 @@ fetch(requestsUrl, {
         action.innerHTML = `<a href="/view?id=${request.id}"><input type="button" value="View" class="button"></a>`;
       });
     }
-  }).catch(error => console.log(error));
+  }).catch(error => console.error(error));

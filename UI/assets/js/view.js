@@ -70,5 +70,5 @@ fetch(requestUrl, {
       owner.innerHTML = `by ${result.owner}`;
       detail.innerHTML = `${result.detail}`;
     }
-  }).catch(error => console.log(error));
+  }).catch(error => console.error(error));
 

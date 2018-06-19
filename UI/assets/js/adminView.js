@@ -18,7 +18,6 @@ fetch(requestUrl, {
 })
   .then(response => response.json())
   .then((data) => {
-    console.log(data);
     if (!data.result) {
       displayMessage('The request id you entered does not exist', '/admin');
     } else {
