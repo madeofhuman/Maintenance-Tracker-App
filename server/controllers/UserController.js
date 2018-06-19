@@ -66,7 +66,7 @@ export default class UserController {
           return res.status(403).json({
             statusCode: 403,
             error: 'Forbidden',
-            message: 'The email address you entered does not exist',
+            message: 'Authentication failed, please check your credentials',
           });
         }
 
@@ -89,7 +89,7 @@ export default class UserController {
           return res.status(403).json({
             statusCode: 403,
             error: 'Forbidden',
-            message: 'The password you entered doesn\'t match the email address',
+            message: 'Authentication failed, please check your credentials',
           });
         });
       })
