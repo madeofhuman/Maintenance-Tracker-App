@@ -70,16 +70,15 @@ export default class UserController {
           });
         }
 
-        const payload = {
-          firstName: result.rows[0].first_name,
-          lastName: result.rows[0].last_name,
-          email: result.rows[0].email,
-          role: result.rows[0].role,
-        };
-
         // compare password hash and create jwt token
         bcrypt.compare(password, result.rows[0].password_hash, (bcryptError, bcryptResult) => {
           if (bcryptResult) {
+            const payload = {
+              firstName: result.rows[0].first_name,
+              lastName: result.rows[0].last_name,
+              email: result.rows[0].email,
+              role: result.rows[0].role,
+            };
             return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res.status(200).json({
               statusCode: 200,
               message: 'You\'ve been successfully logged in. Go forth and do all the things!',
