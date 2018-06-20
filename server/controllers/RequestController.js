@@ -106,7 +106,7 @@ export default class RequestController {
         if (result.rowCount < 1) {
           return res.status(200).json(apiResponses.request.updateFailure(req));
         }
-        return res.status(200).json(apiResponses.request.updateSuccess());
+        return res.status(200).json(apiResponses.request.updateSuccess(result));
       })
       .catch(() => res.status(500).json(apiResponses['500']));
   }
