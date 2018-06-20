@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import Request from '../models/Request';
 import { db } from '../database';
+import { apiResponses } from '../helpers/apiResponses';
 
 dotenv.config();
 
@@ -13,27 +14,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'You have no requests at the moment. ' +
-            'Do you have any item that needs fixing? We love fixing stuff!',
-            result: [],
-          });
+          return res.status(200).json(apiResponses.request.noRequests());
         }
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'Your requests were succesfully retrieved',
-          result: result.rows,
-        });
+        return res.status(200).json(apiResponses.request.yesRequests(result));
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-          'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static createRequest(req, res) {
@@ -55,36 +40,13 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(500).json({
-            statusCode: 500,
-            error: 'Internal Server Error',
-            message: 'Oops! Another bug must have crawled into our systems, ' +
-            'but we are right on it! Please try your request later :\'(',
-          });
+          return res.status(500).json(apiResponses['500']);
         }
-
-        return res.status(201).json({
-          statusCode: 201,
-          error: [],
-          message: 'Yay! Your request was successfuly created and is pending admin approval.',
-          result: {
-            id: result.rows[0].id,
-            type: result.rows[0].type,
-            item: result.rows[0].item,
-            model: result.rows[0].model,
-            detail: result.rows[0].detail,
-            createdAt: result.rows[0].created_at,
-          },
-        });
+        return res.status(201).json(apiResponses.request.createSuccess(result));
       })
       .catch((error) => {
-        res.status(500).json({
-          statusCode: 500,
-          error: 'Internal Server Error',
-          message: 'Oops! Another bug must have crawled into our systems, ' +
-          'but we are right on it! Please try your request later :\'(',
-        });
         console.error('Error ', error.stack);
+        res.status(500).json(apiResponses['500']);
       });
   }
 
@@ -99,27 +61,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'You have no request with that id, please try another request id',
-            result: result.rows,
-          });
+          return res.status(200).json(apiResponses.request.noRequest());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'Your request was successfully retrieved',
-          result: result.rows[0],
-        });
+        return res.status(200).json(apiResponses.request.yesRequest(result));
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-          'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static deleteRequest(req, res) {
@@ -133,25 +79,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(404).json({
-            statusCode: 404,
-            error: [],
-            message: 'You have no request with that id, please try another request id',
-          });
+          return res.status(200).json(apiResponses.request.noRequest());
         }
-
-        res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'The request was succesfully deleted',
-        });
+        res.status(200).json(apiResponses.request.deleteSuccess());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static updateRequest(req, res) {
@@ -172,35 +104,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(404).json({
-            statusCode: 200,
-            error: [],
-            message: `You have no unapproved request with id ${req.params.requestId}. ` +
-            'You cannot edit a request that has been approved.',
-          });
+          return res.status(200).json(apiResponses.request.updateFailure(req));
         }
-
-        res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'You have successfully updated the request',
-          result: {
-            id: result.rows[0].id,
-            type: result.rows[0].type,
-            item: result.rows[0].item,
-            model: result.rows[0].model,
-            detail: result.rows[0].detail,
-            createdAt: result.rows[0].created_at,
-            updatedAt: result.rows[0].updated_at,
-          },
-        });
+        return res.status(200).json(apiResponses.request.updateSuccess());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
 
@@ -210,27 +118,11 @@ export default class RequestController {
     db.query('SELECT * FROM requests ORDER BY id ASC')
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'There are no requests in the system. Do we even have people using this app?',
-            result: [],
-          });
+          return res.status(200).json(apiResponses.admin.noRequests());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'Requests retrieved successfully.',
-          result: result.rows,
-        });
+        return res.status(200).json(apiResponses.admin.yesRequests(result));
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static approveRequest(req, res) {
@@ -240,25 +132,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'There is no request in review with that id. Please try another request id.',
-          });
+          return res.status(200).json(apiResponses.admin.approveFailure());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'The request was successfully approved. Time to get to work!',
-        });
+        return res.status(200).json(apiResponses.admin.approveSuccess());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static disapproveRequest(req, res) {
@@ -268,25 +146,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'There is no unresolved request with that id. Please try another request id.',
-          });
+          return res.status(200).json(apiResponses.admin.disapproveFailure());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'The request was successfully disapproved',
-        });
+        return res.status(200).json(apiResponses.admin.disapproveSuccess());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static resolveRequest(req, res) {
@@ -296,25 +160,11 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'There is no pending request with that id. Please try another request id.',
-          });
+          return res.status(200).json(apiResponses.admin.resolveFailure());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'Yay! The request was resolved successfully.',
-        });
+        return res.status(200).json(apiResponses.admin.resolveSuccess());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 
   static getARequest(req, res) {
@@ -327,25 +177,10 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json({
-            statusCode: 200,
-            error: [],
-            message: 'There is no request with that id. Please try another request id.',
-          });
+          return res.status(200).json(apiResponses.admin.noRequest());
         }
-
-        return res.status(200).json({
-          statusCode: 200,
-          error: [],
-          message: 'The request was successfully retrieved',
-          result: result.rows[0],
-        });
+        return res.status(200).json(apiResponses.admin.yesRequest());
       })
-      .catch(() => res.status(500).json({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Oops! Another bug must have crawled into our systems, ' +
-        'but we are right on it! Please try your request later :\'(',
-      }));
+      .catch(() => res.status(500).json(apiResponses['500']));
   }
 }
