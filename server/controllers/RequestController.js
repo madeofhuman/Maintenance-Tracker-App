@@ -179,7 +179,7 @@ export default class RequestController {
         if (result.rows < 1) {
           return res.status(200).json(apiResponses.admin.noRequest());
         }
-        return res.status(200).json(apiResponses.admin.yesRequest());
+        return res.status(200).json(apiResponses.admin.yesRequest(result));
       })
       .catch(() => res.status(500).json(apiResponses['500']));
   }
