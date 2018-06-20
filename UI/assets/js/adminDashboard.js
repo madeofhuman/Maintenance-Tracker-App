@@ -30,7 +30,6 @@ fetch(requestsUrl, {
         </div>
       `;
     } else {
-      let i = 0;
       tableWrapper.innerHTML = `
         <table class="table white" id="requests-table">
           <thead class="orange">
@@ -49,8 +48,7 @@ fetch(requestsUrl, {
         </table>
       `;
       const requestsTable = document.getElementById('requests-table');
-      data.result.forEach((request) => {
-        i += 1;
+      for (let i = 0; i < data.result.length; i += 1) {
         const row = requestsTable.insertRow();
         row.classList.add('white');
 
@@ -62,13 +60,13 @@ fetch(requestsUrl, {
         const status = row.insertCell();
         const action = row.insertCell();
 
-        sn.innerHTML = i;
-        item.innerHTML = request.item;
-        model.innerHTML = request.model;
-        type.innerHTML = request.type;
-        detail.innerHTML = request.detail;
-        status.innerHTML = request.status;
-        action.innerHTML = `<a href="/admin/view?id=${request.id}"><input type="button" value="View" class="button"></a>`;
-      });
+        sn.innerHTML = i + 1;
+        item.innerHTML = data.result[i].item;
+        model.innerHTML = data.result[i].model;
+        type.innerHTML = data.result[i].type;
+        detail.innerHTML = data.result[i].detail;
+        status.innerHTML = data.result[i].status;
+        action.innerHTML = `<a href="/admin/view?id=${data.result[i].id}"><input type="button" value="View" class="button"></a>`;
+      }
     }
   }).catch(error => console.error(error));
