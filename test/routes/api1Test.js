@@ -45,7 +45,7 @@ describe('User Account Actions', () => {
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.an('object').with.property('message')
-            .equals('Yay! Your account was successfully created. You can log in now.');
+            .equals('Your account was successfully created. You can log in now.');
           done();
         });
     });
@@ -148,7 +148,7 @@ describe('Request Actions', () => {
           .end((err, res) => {
             res.should.have.status(201);
             res.body.should.be.an('object').with.property('message')
-              .equals('Yay! Your request was successfuly created and is pending admin approval.');
+              .equals('Your request was successfuly created and is pending admin approval.');
             done();
           });
       });
