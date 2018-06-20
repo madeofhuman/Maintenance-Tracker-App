@@ -13,7 +13,7 @@ const requestUrl = `/api/v1/users/requests/${param}`;
 fetch(requestUrl, {
   method: 'GET',
   headers: {
-    Authorization: window.localStorage.getItem('Authorization'),
+    Authorization: window.localStorage.getItem('maintain-r-authorization'),
   },
 })
   .then(response => response.json())
@@ -70,5 +70,5 @@ fetch(requestUrl, {
       owner.innerHTML = `by ${result.owner}`;
       detail.innerHTML = `${result.detail}`;
     }
-  }).catch(error => console.log(error));
+  }).catch(error => console.error(error));
 

@@ -90,7 +90,7 @@ const login = (form) => {
         redirectOnLogin(result);
       })
       .catch((error) => {
-        console.log(error.stack);
+        console.error(error.stack);
       });
   });
 };

@@ -17,7 +17,7 @@ const requestUrl = `/api/v1/users/requests/${param}`;
 /* Populate fields */
 fetch(requestUrl, {
   headers: {
-    Authorization: window.localStorage.getItem('Authorization'),
+    Authorization: window.localStorage.getItem('maintain-r-authorization'),
   },
 }).then(response => response.json())
   .then((data) => {

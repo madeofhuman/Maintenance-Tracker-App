@@ -20,7 +20,7 @@ const createRequest = (form, apiPath) => {
     if (formData.model === '') formData.model = 'N/A';
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: window.localStorage.getItem('Authorization'),
+      Authorization: window.localStorage.getItem('maintain-r-authorization'),
     };
     submitForm(formData, apiPath, 'POST', headers, event, '/dashboard');
   });

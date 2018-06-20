@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import { db } from '../database';
+import { apiResponses } from '../helpers/apiResponses';
 
 dotenv.config();
 
@@ -29,29 +30,12 @@ export default class UserController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(500).json({
-            statusCode: 500,
-            error: 'Internal Server Error',
-            message: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-          });
+          return res.status(500).json(apiResponses['500']);
         }
 
-        res.status(201).json({
-          statusCode: 201,
-          message: 'Yay! Your account was successfully created. You can log in now.',
-          result: {
-            id: result.rows[0].id,
-            firstName: result.rows[0].first_name,
-            lastName: result.rows[0].last_name,
-            email: result.rows[0].email,
-          },
-        });
+        res.status(201).json(apiResponses.account.createSuccess(result));
       })
-      .catch(() => res.status(409).json({
-        statusCode: 409,
-        error: 'Email conflict',
-        message: `The email ${user.email} already exists. If you are the owner, please log in.`,
-      }));
+      .catch(() => res.status(409).json(apiResponses.account.createFailure(user)));
   }
 
   static userLogin(req, res) {
@@ -63,44 +47,28 @@ export default class UserController {
     db.query('SELECT * FROM users WHERE email = $1', [email])
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(403).json({
-            statusCode: 403,
-            error: 'Forbidden',
-            message: 'The email address you entered does not exist',
-          });
+          return res.status(403).json(apiResponses.account.loginFailure());
         }
-
-        const payload = {
-          firstName: result.rows[0].first_name,
-          lastName: result.rows[0].last_name,
-          email: result.rows[0].email,
-          role: result.rows[0].role,
-        };
 
         // compare password hash and create jwt token
         bcrypt.compare(password, result.rows[0].password_hash, (bcryptError, bcryptResult) => {
           if (bcryptResult) {
-            return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res.status(200).json({
-              statusCode: 200,
-              message: 'You\'ve been successfully logged in. Go forth and do all the things!',
-              token,
-            }));
+            const payload = {
+              firstName: result.rows[0].first_name,
+              lastName: result.rows[0].last_name,
+              email: result.rows[0].email,
+              role: result.rows[0].role,
+            };
+            return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res
+              .status(200).json(apiResponses.account.loginSuccess(token)));
           }
 
-          return res.status(403).json({
-            statusCode: 403,
-            error: 'Forbidden',
-            message: 'The password you entered doesn\'t match the email address',
-          });
+          return res.status(403).json(apiResponses.account.loginFailure());
         });
       })
       .catch((e) => {
-        res.status(500).json({
-          statusCode: 500,
-          error: 'Internal Server Error',
-          message: 'Oops! Another bug must have crawled into our systems, but we are right on it! Please try your request later :\'(',
-        });
         console.error('error', e.stack);
+        return res.status(500).json(apiResponses['500']);
       });
   }
 }
