@@ -7,7 +7,7 @@ const tableWrapper = document.getElementById('table-wrapper');
 const sortGroup = document.getElementById('table-sort');
 
 /* Set welcome message */
-const user = JSON.parse(window.localStorage.getItem('User'));
+const user = JSON.parse(window.localStorage.getItem('maintain-r-user'));
 username.innerHTML += `${user.firstName}.`;
 
 /* Fetch API */
@@ -17,7 +17,7 @@ const requestsUrl = '/api/v1/requests';
 
 fetch(requestsUrl, {
   headers: {
-    Authorization: window.localStorage.getItem('Authorization'),
+    Authorization: window.localStorage.getItem('maintain-r-authorization'),
   },
 })
   .then(response => response.json())

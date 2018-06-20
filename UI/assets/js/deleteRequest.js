@@ -12,7 +12,7 @@ const deleteRequest = () => {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: window.localStorage.getItem('Authorization'),
+      Authorization: window.localStorage.getItem('maintain-r-authorization'),
     },
   }).then(response => response.json())
     .then((result) => {

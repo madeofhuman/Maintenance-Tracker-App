@@ -121,7 +121,7 @@ const decodeJwt = (token) => {
 * login response
 */
 const setToken = (loginResult) => {
-  window.localStorage.setItem('Authorization', `Bearer ${loginResult.token}`);
+  window.localStorage.setItem('maintain-r-authorization', `Bearer ${loginResult.token}`);
 };
 
 
@@ -142,7 +142,7 @@ const redirectOnLogin = (loginResult) => {
  * Redirect the authenticated user to their dashboard if they visit the landing page
  */
 const redirectIfLoggedIn = () => {
-  const user = JSON.parse(window.localStorage.getItem('User'));
+  const user = JSON.parse(window.localStorage.getItem('maintain-r-user'));
   if (user !== null || user !== undefined) {
     if (user.role === 'admin') {
       window.location.replace('/admin');

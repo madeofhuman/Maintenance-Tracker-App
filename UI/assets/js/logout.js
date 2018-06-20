@@ -1,3 +1,3 @@
-window.localStorage.removeItem('Authorization');
-window.localStorage.removeItem('User');
+window.localStorage.removeItem('maintain-r-authorization');
+window.localStorage.removeItem('maintain-r-user');
 window.location.replace('/');

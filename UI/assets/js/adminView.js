@@ -13,10 +13,9 @@ const requestUrl = `/api/v1/requests/${param}`;
 fetch(requestUrl, {
   method: 'GET',
   headers: {
-    Authorization: window.localStorage.getItem('Authorization'),
+    Authorization: window.localStorage.getItem('maintain-r-authorization'),
   },
-})
-  .then(response => response.json())
+}).then(response => response.json())
   .then((data) => {
     if (!data.result) {
       displayMessage('The request id you entered does not exist', '/admin');
@@ -69,6 +68,7 @@ fetch(requestUrl, {
       const owner = document.getElementById('owner');
       const status = document.getElementById('status');
       const detail = document.getElementById('detail');
+
       title.innerHTML = `${result.item}, ${result.type}`;
       date.innerHTML = `${new Date(result.created_at).toDateString()}`;
       model.innerHTML = `${result.model} - `;
@@ -77,4 +77,3 @@ fetch(requestUrl, {
       detail.innerHTML = `${result.detail}`;
     }
   }).catch(error => console.error(error));
-
