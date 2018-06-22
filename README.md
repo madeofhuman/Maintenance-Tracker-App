@@ -39,9 +39,9 @@ Follow the instructions below to get a copy of the project running on your local
   3. The application requires Postgres database, follow the instructions [here](https://www.postgresql.org/download/)
      to download and install it for your operating system.
     3.1. Add postgres to your PATH on [Windows](https://bobbyong.com/blog/installing-postgresql-on-windoes/), [Linux](https://www.postgresql.org/docs/8.3/static/install-post.html), and [Mac](https://postgresapp.com/documentation/install.html)
-  5. In the root directory of the application, run the following command to create the database tables
+  5. In the app directory, run the following command to create the dev and test databases and tables
   ```
-  psql -U [postgres username] -d [postgres dataBase (default is 'postgres')] -f seed.sql
+  npm run seed
   ```
   6. Start the local server by running
   ```

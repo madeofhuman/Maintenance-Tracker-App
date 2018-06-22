@@ -9,7 +9,8 @@
     "build": "babel server -d dist",
     "serve": "node dist/index.js",
     "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register --recursive ./test/ --exit",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "seed": "psql -U postgres -f seed.sql"
   },
   "nyc": {
     "exclude": [
