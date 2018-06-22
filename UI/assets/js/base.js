@@ -142,13 +142,15 @@ const redirectOnLogin = (loginResult) => {
  * Redirect the authenticated user to their dashboard if they visit the landing page
  */
 const redirectIfLoggedIn = () => {
+  const bearer = window.localStorage.getItem('maintain-r-authorization');
   const user = JSON.parse(window.localStorage.getItem('maintain-r-user'));
-  if (user !== null || user !== undefined) {
-    if (user.role === 'admin') {
-      window.location.replace('/admin');
-    }
-    if (user.role === 'user') {
-      window.location.replace('/dashboard');
-    }
+  if (!bearer || !user) {
+    return null;
+  }
+  if (user.role === 'admin') {
+    window.location.replace('/admin');
+  }
+  if (user.role === 'user') {
+    window.location.replace('/dashboard');
   }
 };
