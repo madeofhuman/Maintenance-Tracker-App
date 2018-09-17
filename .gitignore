@@ -15,3 +15,5 @@ dist/
 .env
 
 server/access.log
+
+package-lock.json
