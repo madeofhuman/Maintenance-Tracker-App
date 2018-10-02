@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import swagger from 'swagger-ui-express';
@@ -12,6 +13,14 @@ import client from './routes/client';
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: true,
+  optionsSuccessStatus: 200,
+  allowedHeaders: 'Origin, x-access-token, content-type, Authorization',
+}));
 
 // use morgan for logging in dev mode
 if (process.env.NODE_ENV === 'dev') {
@@ -43,7 +52,9 @@ app.all('*', (req, res) => {
 
 // start the server
 const port = (process.env.PORT || 3000);
-app.listen(port, () => { console.log(`Server running on port ${port}...`); });
+if (!module.parent) {
+  app.listen(port, () => { console.log(`Server running on port ${port}...`); });
+}
 
 // export app for testing
 export default app;

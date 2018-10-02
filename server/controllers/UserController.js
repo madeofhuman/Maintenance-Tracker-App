@@ -60,7 +60,7 @@ export default class UserController {
               role: result.rows[0].role,
             };
             return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res
-              .status(200).json(apiResponses.account.loginSuccess(token)));
+              .status(200).json(apiResponses.account.loginSuccess(token, payload)));
           }
 
           return res.status(403).json(apiResponses.account.loginFailure());

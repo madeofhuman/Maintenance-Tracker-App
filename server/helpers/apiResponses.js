@@ -20,10 +20,11 @@ export const apiResponses = {
       error: 'Email conflict',
       message: `The email ${userInput.email} already exists. If you are the owner, please log in.`,
     }),
-    loginSuccess: signedJwt => ({
+    loginSuccess: (signedJwt, payload) => ({
       statusCode: 200,
       message: 'You\'ve been successfully logged in.',
       token: signedJwt,
+      user: payload,
     }),
     loginFailure: () => ({
       statusCode: 403,

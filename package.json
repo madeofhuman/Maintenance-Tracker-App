@@ -25,9 +25,6 @@
     "type": "git",
     "url": "git+https://github.com/madeofhuman/Maintenance-Tracker-App.git"
   },
-  "engines": {
-    "node": "8.1.1"
-  },
   "keywords": [
     "maintenance",
     "repair"
@@ -52,12 +49,13 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "celebrate": "^8.0.0",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
     "cross-env": "^5.1.6",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
