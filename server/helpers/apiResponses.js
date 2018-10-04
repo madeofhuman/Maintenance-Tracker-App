@@ -80,15 +80,7 @@ export const apiResponses = {
       statusCode: 200,
       error: [],
       message: 'You have successfully updated the request',
-      result: {
-        id: queryResult.rows[0].id,
-        type: queryResult.rows[0].type,
-        item: queryResult.rows[0].item,
-        model: queryResult.rows[0].model,
-        detail: queryResult.rows[0].detail,
-        createdAt: queryResult.rows[0].created_at,
-        updatedAt: queryResult.rows[0].updated_at,
-      },
+      result: queryResult.rows[0],
     }),
     updateFailure: req => ({
       statusCode: 200,
@@ -127,30 +119,33 @@ export const apiResponses = {
       error: [],
       message: 'There is no request in review with that id. Please try another request id.',
     }),
-    approveSuccess: () => ({
+    approveSuccess: queryResult => ({
       statusCode: 200,
       error: [],
       message: 'The request was successfully approved. Time to get to work!',
+      result: queryResult.rows[0],
     }),
     disapproveFailure: () => ({
       statusCode: 200,
       error: [],
       message: 'There is no unresolved request with that id. Please try another request id.',
     }),
-    disapproveSuccess: () => ({
+    disapproveSuccess: queryResult => ({
       statusCode: 200,
       error: [],
       message: 'The request was successfully disapproved',
+      result: queryResult.rows[0],
     }),
     resolveFailure: () => ({
       statusCode: 200,
       error: [],
       message: 'There is no pending request with that id. Please try another request id.',
     }),
-    resolveSuccess: () => ({
+    resolveSuccess: queryResult => ({
       statusCode: 200,
       error: [],
       message: 'The request was resolved successfully.',
+      result: queryResult.rows[0],
     }),
   },
 };

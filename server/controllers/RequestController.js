@@ -9,7 +9,7 @@ export default class RequestController {
   static getRequests(req, res) {
     // query db for user requests ordering by id
     db.query(
-      'SELECT * FROM requests WHERE owner = $1 ORDER BY id ASC',
+      'SELECT * FROM requests WHERE owner = $1 ORDER BY created_at DESC',
       [req.user.email],
     )
       .then((result) => {
@@ -115,7 +115,7 @@ export default class RequestController {
   // Admin
   static getAllRequests(req, res) {
     // query db for all requests, ordering by id
-    db.query('SELECT * FROM requests ORDER BY id ASC')
+    db.query('SELECT * FROM requests ORDER BY created_at DESC')
       .then((result) => {
         if (result.rows < 1) {
           return res.status(200).json(apiResponses.admin.noRequests());
@@ -134,7 +134,7 @@ export default class RequestController {
         if (result.rows < 1) {
           return res.status(200).json(apiResponses.admin.approveFailure());
         }
-        return res.status(200).json(apiResponses.admin.approveSuccess());
+        return res.status(200).json(apiResponses.admin.approveSuccess(result));
       })
       .catch(() => res.status(500).json(apiResponses['500']));
   }
@@ -148,7 +148,7 @@ export default class RequestController {
         if (result.rows < 1) {
           return res.status(200).json(apiResponses.admin.disapproveFailure());
         }
-        return res.status(200).json(apiResponses.admin.disapproveSuccess());
+        return res.status(200).json(apiResponses.admin.disapproveSuccess(result));
       })
       .catch(() => res.status(500).json(apiResponses['500']));
   }
@@ -162,7 +162,7 @@ export default class RequestController {
         if (result.rows < 1) {
           return res.status(200).json(apiResponses.admin.resolveFailure());
         }
-        return res.status(200).json(apiResponses.admin.resolveSuccess());
+        return res.status(200).json(apiResponses.admin.resolveSuccess(result));
       })
       .catch(() => res.status(500).json(apiResponses['500']));
   }
