@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Request | Maintenance Tracker App</title>
+
+  <link rel="stylesheet" type="text/css" href="/static/css/request.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,700" rel="stylesheet">
+  <link rel="shortcut icon" type="image/svg" href="/static/img/gears.svg">
+  <script src="/static/js/jwt-decode.min.js"></script>
+  <script src="/static/js/base.js"></script>
+	<script src="/static/js/verifyUser.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <span class="logo left">
+      <a href="/dashboard">
+        <img src="/static/img/logo.svg" alt="logo">
+      </a>
+    </span>
+    <span class="left white back">
+      <a href="/dashboard">< &nbsp Back</a>
+    </span>
+    <span class="profile-icon right">
+      <span class="text orange">
+        <a href="/logout">Logout</a>
+      </span>
+      <img src="/static/img/profile-icon.svg" alt="profile icon">
+    </span>
+  </div>
+
+  <div class="body" style="background-image:url('/static/img/cloud-gear-spanner.svg');">
+      <p class="output white center" id="output"></p>
+    <div class="wrapper" id="wrapper">
+    </div>
+  </div>
+  <script src="/static/js/view.js"></script>
+  <script src="/static/js/deleteRequest.js"></script>
+</body>
+
+</html>

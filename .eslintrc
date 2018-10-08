@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "mocha": true,
+    "browser": true
+  },
+  "rules": {
+    "consistent-return": "off",
+    "no-console": "off",
+    "import/prefer-default-export": "off"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "maintain-r",
+  "scripts": {
+    "postdeploy": "psql $DATABASE_URL -f seed.sql"
+  },
+  "env": {},
+  "formation": {},
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "options": {
+        "version": "10.3"
+      }
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
