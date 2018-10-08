@@ -33,7 +33,21 @@ export default class UserController {
           return res.status(500).json(apiResponses['500']);
         }
 
-        res.status(201).json(apiResponses.account.createSuccess(result));
+        // compare password hash and create jwt token
+        bcrypt.compare(password, result.rows[0].password_hash, (bcryptError, bcryptResult) => {
+          if (bcryptResult) {
+            const payload = {
+              firstName: result.rows[0].first_name,
+              lastName: result.rows[0].last_name,
+              email: result.rows[0].email,
+              role: result.rows[0].role,
+            };
+            return jwt.sign(payload, secretKey, { expiresIn: '1day' }, (jwtError, token) => res
+              .status(201).json(apiResponses.account.createSuccess(token, payload)));
+          }
+
+          return res.status(403).json(apiResponses.account.loginFailure());
+        });
       })
       .catch(() => res.status(409).json(apiResponses.account.createFailure(user)));
   }

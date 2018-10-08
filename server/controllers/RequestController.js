@@ -14,7 +14,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.request.noRequests());
+          return res.status(404).json(apiResponses.request.noRequests());
         }
         return res.status(200).json(apiResponses.request.yesRequests(result));
       })
@@ -68,7 +68,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.request.noRequest());
+          return res.status(404).json(apiResponses.request.noRequest());
         }
         return res.status(200).json(apiResponses.request.yesRequest(result));
       })
@@ -86,7 +86,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(200).json(apiResponses.request.noRequest());
+          return res.status(404).json(apiResponses.request.deleteFailure());
         }
         res.status(200).json(apiResponses.request.deleteSuccess());
       })
@@ -100,7 +100,7 @@ export default class RequestController {
       type, item, model, detail,
     } = req.body;
 
-    // db query to update request only if the reques status isn't pending
+    // db query to update request only if the request status isn't pending
     db.query(
       `UPDATE requests SET type = $1, item = $2, model = $3, detail = $4, updated_at = $5 
       WHERE id = $6 and owner = $7 and status = $8 RETURNING *`,
@@ -111,7 +111,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rowCount < 1) {
-          return res.status(200).json(apiResponses.request.updateFailure(req));
+          return res.status(404).json(apiResponses.request.updateFailure(req));
         }
         return res.status(200).json(apiResponses.request.updateSuccess(result));
       })
@@ -125,7 +125,7 @@ export default class RequestController {
     db.query('SELECT * FROM requests ORDER BY created_at DESC')
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.admin.noRequests());
+          return res.status(404).json(apiResponses.admin.noRequests());
         }
         return res.status(200).json(apiResponses.admin.yesRequests(result));
       })
@@ -139,7 +139,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.admin.approveFailure());
+          return res.status(404).json(apiResponses.admin.approveFailure());
         }
         return res.status(200).json(apiResponses.admin.approveSuccess(result));
       })
@@ -153,7 +153,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.admin.disapproveFailure());
+          return res.status(404).json(apiResponses.admin.disapproveFailure());
         }
         return res.status(200).json(apiResponses.admin.disapproveSuccess(result));
       })
@@ -167,7 +167,7 @@ export default class RequestController {
     )
       .then((result) => {
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.admin.resolveFailure());
+          return res.status(404).json(apiResponses.admin.resolveFailure());
         }
         return res.status(200).json(apiResponses.admin.resolveSuccess(result));
       })
@@ -183,8 +183,9 @@ export default class RequestController {
       [requestId],
     )
       .then((result) => {
+        console.log(result.rows);
         if (result.rows < 1) {
-          return res.status(200).json(apiResponses.admin.noRequest());
+          return res.status(404).json(apiResponses.admin.noRequest());
         }
         return res.status(200).json(apiResponses.admin.yesRequest(result));
       })

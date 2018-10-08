@@ -45,7 +45,7 @@ describe('User Account Actions', () => {
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.an('object').with.property('message')
-            .equals('Your account was successfully created. You can log in now.');
+            .equals('Your account was successfully created.');
           done();
         });
     });
@@ -354,8 +354,8 @@ describe('Request Actions', () => {
           .end((err, res) => {
             res.should.have.status(400);
             res.body.should.be.an('object').with.property('message')
-              .equals('child "requestId" fails because [you entered an invalid request id. ' +
-                'A request id can only be a positive integer.]');
+              .equals('You entered an invalid request id. ' +
+                'A request id can only be a positive integer.');
             done();
           });
       });

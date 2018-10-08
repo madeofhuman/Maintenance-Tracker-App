@@ -32,7 +32,7 @@ api1.get('/requests', celebrate(schema.jwtTokenSchema), tokenValidator.validateU
 api1.put('/requests/:requestId/approve', celebrate(schema.jwtTokenSchema), tokenValidator.validateUser, tokenValidator.validateAdmin, RequestController.approveRequest);
 api1.put('/requests/:requestId/disapprove', celebrate(schema.jwtTokenSchema), tokenValidator.validateUser, tokenValidator.validateAdmin, RequestController.disapproveRequest);
 api1.put('/requests/:requestId/resolve', celebrate(schema.jwtTokenSchema), tokenValidator.validateUser, tokenValidator.validateAdmin, RequestController.resolveRequest);
-api1.get('/requests/:requestId', celebrate(schema.jwtTokenSchema), tokenValidator.validateUser, tokenValidator.validateAdmin, RequestController.getARequest);
+api1.get('/requests/:requestId', celebrate(schema.jwtTokenSchema), celebrate(schema.requestSchema), tokenValidator.validateUser, tokenValidator.validateAdmin, RequestController.getARequest);
 
 api1.use(errors());
 

@@ -10,7 +10,7 @@ export const tokenValidator = {
     if (req.user.role !== 'admin') {
       return res.status(401).json({
         statusCode: 401,
-        error: [],
+        error: 'Unauthorised access',
         message: 'Are you trying to go where you should not? ' +
         'You need admin access to see what goes on here.',
       });
