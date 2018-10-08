@@ -29,6 +29,13 @@ export default class RequestController {
       req.body.detail, owner,
     );
 
+    if (request.item.trim() === '') {
+      return res.status(400).json(apiResponses.request.createFailureItem());
+    }
+    if (request.detail.trim() === '') {
+      return res.status(400).json(apiResponses.request.createFailureDetail());
+    }
+
     // save valid request to db
     db.query(
       `INSERT INTO requests (type, item, model, detail, status, owner, created_at) 

@@ -17,6 +17,9 @@ const createRequest = (form, apiPath) => {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const formData = getFormData(event);
+    // if (formData.item.trim() === '' || formData.detail.trim() === '') {
+    //   return alert('Item and Description fields cannot be empty');
+    // }
     if (formData.model === '') formData.model = 'N/A';
     const headers = {
       'Content-Type': 'application/json',

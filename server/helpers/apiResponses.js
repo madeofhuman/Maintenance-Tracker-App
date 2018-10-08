@@ -59,6 +59,16 @@ export const apiResponses = {
         createdAt: queryResult.rows[0].created_at,
       },
     }),
+    createFailureItem: () => ({
+      statusCode: 400,
+      error: 'Blank Item',
+      message: 'The request item cannot be empty.',
+    }),
+    createFailureDetail: () => ({
+      statusCode: 400,
+      error: 'Blank Description',
+      message: 'The request description cannot be empty.',
+    }),
     noRequest: () => ({
       statusCode: 200,
       error: [],
